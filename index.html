@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#f6efe5" />
+  <title>食堂日常</title>
+  <link rel="manifest" href="manifest.json" />
+  <style>
+    :root {
+      --bg: #f6efe5;
+      --card: #fffaf4;
+      --text: #2f2a25;
+      --muted: #796f66;
+      --primary: #d66b3d;
+      --primary-dark: #b9552e;
+      --accent: #748b59;
+      --line: #eadfd2;
+      --danger: #b84444;
+      --shadow: 0 8px 24px rgba(75, 52, 35, 0.08);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    button, input, textarea, select { font: inherit; }
+    button { cursor: pointer; }
+    img { max-width: 100%; display: block; }
+
+    .app {
+      max-width: 980px;
+      margin: 0 auto;
+      min-height: 100vh;
+      padding: 18px 16px 92px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+    .brand h1 { margin: 0; font-size: 30px; letter-spacing: 1px; }
+    .brand p { margin: 6px 0 0; color: var(--muted); font-size: 14px; }
+    .primary-btn, .secondary-btn, .ghost-btn, .danger-btn {
+      border: 0;
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-weight: 700;
+    }
+    .primary-btn { background: var(--primary); color: white; }
+    .primary-btn:hover { background: var(--primary-dark); }
+    .secondary-btn { background: #e7eedf; color: #3e5130; }
+    .ghost-btn { background: transparent; color: var(--text); border: 1px solid var(--line); }
+    .danger-btn { background: #f7e4e4; color: var(--danger); }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      background: rgba(255,255,255,.55);
+      padding: 6px;
+      border-radius: 16px;
+      position: sticky;
+      top: 8px;
+      z-index: 10;
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+      margin-bottom: 18px;
+    }
+    .tab-btn {
+      border: 0;
+      background: transparent;
+      border-radius: 12px;
+      padding: 11px 8px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+    .tab-btn.active { background: var(--card); color: var(--primary); }
+    .page { display: none; }
+    .page.active { display: block; }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+      margin-bottom: 16px;
+    }
+    .panel h2, .panel h3 { margin-top: 0; }
+
+    .search-row { display: grid; grid-template-columns: 1fr auto; gap: 10px; }
+    .input, textarea, select {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: white;
+      color: var(--text);
+      border-radius: 12px;
+      padding: 11px 12px;
+      outline: none;
+    }
+    textarea { resize: vertical; min-height: 110px; }
+    .input:focus, textarea:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(214,107,61,.12); }
+
+    .recipe-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 14px;
+    }
+    .recipe-card {
+      overflow: hidden;
+      border-radius: 16px;
+      background: white;
+      border: 1px solid var(--line);
+      cursor: pointer;
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+    .recipe-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+    .recipe-card img { width: 100%; height: 150px; object-fit: cover; background: #efe7de; }
+    .recipe-card-body { padding: 12px; }
+    .recipe-card h3 { margin: 0 0 8px; font-size: 18px; }
+    .meta { color: var(--muted); font-size: 13px; line-height: 1.5; }
+    .chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+    .chip {
+      padding: 6px 9px;
+      border-radius: 999px;
+      background: #f0e9df;
+      color: #5f554c;
+      border: 1px solid transparent;
+      font-size: 13px;
+    }
+    .chip.selectable { cursor: pointer; }
+    .chip.selected { background: #dfead5; color: #3d542d; border-color: #aabd94; }
+
+    .empty {
+      text-align: center;
+      color: var(--muted);
+      padding: 36px 20px;
+      border: 1px dashed var(--line);
+      border-radius: 16px;
+      background: rgba(255,255,255,.35);
+    }
+
+    .date-nav {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 10px;
+      align-items: center;
+    }
+    .date-nav input { text-align: center; font-weight: 700; }
+
+    .meal-section { margin-top: 16px; }
+    .meal-header { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    .meal-header h3 { margin: 0; }
+    .meal-list { display: grid; gap: 9px; margin-top: 10px; }
+    .meal-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 12px;
+    }
+    .meal-item-name { font-weight: 700; cursor: pointer; color: var(--primary-dark); }
+
+    .shopping-list { display: grid; gap: 8px; }
+    .shopping-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 9px 10px;
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+    }
+    .shopping-item.checked { opacity: .55; text-decoration: line-through; }
+
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(35, 28, 22, .58);
+      z-index: 100;
+      padding: 18px;
+      overflow-y: auto;
+    }
+    .modal-backdrop.open { display: block; }
+    .modal {
+      max-width: 720px;
+      margin: 24px auto;
+      background: var(--card);
+      border-radius: 22px;
+      box-shadow: 0 24px 80px rgba(0,0,0,.22);
+      overflow: hidden;
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+      position: sticky;
+      top: 0;
+      background: var(--card);
+      z-index: 2;
+    }
+    .modal-header h2 { margin: 0; }
+    .modal-body { padding: 18px; }
+    .close-btn { border: 0; background: transparent; font-size: 26px; line-height: 1; color: var(--muted); }
+
+    .form-grid { display: grid; gap: 14px; }
+    .form-grid.two { grid-template-columns: 1fr 1fr; }
+    label { display: grid; gap: 7px; font-weight: 700; }
+    .help { color: var(--muted); font-size: 12px; font-weight: 400; }
+    .ingredient-row {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr auto;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .image-preview {
+      width: 100%;
+      max-height: 260px;
+      object-fit: cover;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      display: none;
+      margin-top: 8px;
+    }
+    .modal-actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 9px; margin-top: 18px; }
+
+    .detail-image { width: 100%; max-height: 330px; object-fit: cover; border-radius: 16px; margin-bottom: 16px; }
+    .detail-section { margin-top: 20px; }
+    .detail-section h3 { margin-bottom: 8px; }
+    .detail-section ol, .detail-section ul { padding-left: 22px; line-height: 1.8; }
+    .steps { white-space: pre-wrap; line-height: 1.8; }
+
+    @media (max-width: 640px) {
+      .app { padding: 14px 12px 80px; }
+      .topbar { align-items: flex-start; }
+      .brand h1 { font-size: 26px; }
+      .form-grid.two { grid-template-columns: 1fr; }
+      .ingredient-row { grid-template-columns: 1fr 1fr auto; }
+      .recipe-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+      .recipe-card img { height: 120px; }
+      .search-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand">
+        <h1>食堂日常</h1>
+        <p>记录喜欢的菜，安排每一天的饭。</p>
+      </div>
+      <button class="primary-btn" id="openRecipeFormBtn">＋ 添加菜谱</button>
+    </header>
+
+    <nav class="tabs">
+      <button class="tab-btn active" data-page="recipes">菜单</button>
+      <button class="tab-btn" data-page="pantry">家中食材</button>
+      <button class="tab-btn" data-page="planner">每日规划</button>
+    </nav>
+
+    <section class="page active" id="page-recipes">
+      <div class="panel">
+        <h2>搜索菜谱</h2>
+        <div class="search-row">
+          <input id="recipeSearch" class="input" placeholder="输入菜名、食材、分类或关键词" />
+          <button class="ghost-btn" id="clearSearchBtn">清空</button>
+        </div>
+      </div>
+      <div id="recipeGrid" class="recipe-grid"></div>
+    </section>
+
+    <section class="page" id="page-pantry">
+      <div class="panel">
+        <h2>现在家里有什么食材？</h2>
+        <p class="meta">选择家里现有的食材，下方会显示包含这些食材的菜谱。选择越多，匹配会越精准。</p>
+        <div class="search-row" style="margin-top:12px;">
+          <input id="customPantryInput" class="input" placeholder="添加一种食材，例如：番茄" />
+          <button class="secondary-btn" id="addPantryIngredientBtn">添加食材</button>
+        </div>
+        <div id="pantryChips" class="chips"></div>
+      </div>
+      <div class="panel">
+        <h2>可以做什么？</h2>
+        <div id="pantryMatches" class="recipe-grid"></div>
+      </div>
+    </section>
+
+    <section class="page" id="page-planner">
+      <div class="panel">
+        <div class="date-nav">
+          <button class="ghost-btn" id="prevDayBtn">←</button>
+          <input id="planDate" class="input" type="date" />
+          <button class="ghost-btn" id="nextDayBtn">→</button>
+        </div>
+        <button class="secondary-btn" id="todayBtn" style="width:100%;margin-top:10px;">回到今天</button>
+      </div>
+
+      <div id="mealSections"></div>
+
+      <div class="panel">
+        <h2>当天所需食材</h2>
+        <p class="meta">勾选已准备好的食材。相同食材会自动合并显示。</p>
+        <div id="dailyIngredients" class="shopping-list"></div>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal-backdrop" id="recipeFormModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="recipeFormTitle">添加菜谱</h2>
+        <button class="close-btn" data-close="recipeFormModal">×</button>
+      </div>
+      <div class="modal-body">
+        <form id="recipeForm">
+          <input type="hidden" id="recipeId" />
+          <div class="form-grid">
+            <label>菜名
+              <input id="recipeName" class="input" required placeholder="例如：番茄炒蛋" />
+            </label>
+            <div class="form-grid two">
+              <label>分类
+                <input id="recipeCategory" class="input" placeholder="例如：家常菜、汤、烘焙" />
+              </label>
+              <label>关键词
+                <input id="recipeKeywords" class="input" placeholder="用逗号分隔，例如：快手, 下饭" />
+              </label>
+            </div>
+            <label>菜谱图片
+              <input id="recipeImage" class="input" type="file" accept="image/*" />
+              <span class="help">图片会压缩后保存在当前浏览器中。</span>
+              <img id="imagePreview" class="image-preview" alt="图片预览" />
+            </label>
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px;">
+                <strong>所需食材及用量</strong>
+                <button type="button" class="secondary-btn" id="addIngredientRowBtn">＋ 食材</button>
+              </div>
+              <div id="ingredientRows"></div>
+            </div>
+            <label>制作过程
+              <textarea id="recipeSteps" required placeholder="每一步可换行输入，例如：\n1. 番茄切块。\n2. 鸡蛋打散。\n3. 先炒蛋，再加入番茄。"></textarea>
+            </label>
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="danger-btn" id="deleteRecipeBtn" style="display:none;">删除菜谱</button>
+            <button type="button" class="ghost-btn" data-close="recipeFormModal">取消</button>
+            <button type="submit" class="primary-btn">保存菜谱</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="recipeDetailModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="detailTitle">菜谱详情</h2>
+        <button class="close-btn" data-close="recipeDetailModal">×</button>
+      </div>
+      <div class="modal-body" id="recipeDetailBody"></div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="mealPickerModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="mealPickerTitle">选择菜谱</h2>
+        <button class="close-btn" data-close="mealPickerModal">×</button>
+      </div>
+      <div class="modal-body">
+        <input id="mealPickerSearch" class="input" placeholder="搜索菜名或食材" />
+        <div id="mealPickerGrid" class="recipe-grid" style="margin-top:14px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEYS = {
+      recipes: 'shitangDaily.recipes.v1',
+      pantry: 'shitangDaily.pantry.v1',
+      plans: 'shitangDaily.plans.v1',
+      checks: 'shitangDaily.ingredientChecks.v1'
+    };
+
+    const FALLBACK_IMAGE = `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
+      <svg xmlns="http://www.w3.org/2000/svg" width="800" height="500">
+        <rect width="100%" height="100%" fill="#eee3d6"/>
+        <circle cx="400" cy="210" r="95" fill="#d66b3d" opacity=".25"/>
+        <path d="M300 290c35-55 165-55 200 0" stroke="#748b59" stroke-width="24" fill="none" stroke-linecap="round"/>
+        <text x="50%" y="72%" text-anchor="middle" font-size="44" fill="#796f66" font-family="sans-serif">食堂日常</text>
+      </svg>`)} `;
+
+    const DEFAULT_RECIPES = [
+      {
+        id: crypto.randomUUID(),
+        name: '番茄炒蛋',
+        image: '',
+        category: '家常菜',
+        keywords: ['快手', '下饭'],
+        ingredients: [
+          { name: '番茄', amount: '2个' },
+          { name: '鸡蛋', amount: '3个' },
+          { name: '盐', amount: '适量' },
+          { name: '食用油', amount: '适量' }
+        ],
+        steps: '1. 番茄切块，鸡蛋打散。\n2. 热锅放油，将鸡蛋炒熟后盛出。\n3. 番茄下锅炒软，加入少量盐。\n4. 倒回鸡蛋，翻炒均匀即可。'
+      },
+      {
+        id: crypto.randomUUID(),
+        name: '香菇鸡肉饭',
+        image: '',
+        category: '主食',
+        keywords: ['一锅出', '便当'],
+        ingredients: [
+          { name: '鸡腿肉', amount: '250克' },
+          { name: '香菇', amount: '5朵' },
+          { name: '大米', amount: '2杯' },
+          { name: '生抽', amount: '2勺' }
+        ],
+        steps: '1. 鸡腿肉切块，香菇切片。\n2. 鸡肉用生抽腌制10分钟。\n3. 大米洗净，加入鸡肉、香菇和正常水量。\n4. 电饭煲煮熟后拌匀。'
+      }
+    ];
+
+    let recipes = load(STORAGE_KEYS.recipes, DEFAULT_RECIPES);
+    let pantry = load(STORAGE_KEYS.pantry, []);
+    let plans = load(STORAGE_KEYS.plans, {});
+    let ingredientChecks = load(STORAGE_KEYS.checks, {});
+    let currentMealType = null;
+    let pendingImageData = '';
+
+    const mealTypes = [
+      { key: 'breakfast', label: '早餐' },
+      { key: 'lunch', label: '午餐' },
+      { key: 'dinner', label: '晚餐' },
+      { key: 'snack', label: '加餐' }
+    ];
+
+    const $ = (selector) => document.querySelector(selector);
+    const $$ = (selector) => [...document.querySelectorAll(selector)];
+
+    function load(key, fallback) {
+      try {
+        const value = localStorage.getItem(key);
+        return value ? JSON.parse(value) : structuredClone(fallback);
+      } catch {
+        return structuredClone(fallback);
+      }
+    }
+
+    function saveAll() {
+      localStorage.setItem(STORAGE_KEYS.recipes, JSON.stringify(recipes));
+      localStorage.setItem(STORAGE_KEYS.pantry, JSON.stringify(pantry));
+      localStorage.setItem(STORAGE_KEYS.plans, JSON.stringify(plans));
+      localStorage.setItem(STORAGE_KEYS.checks, JSON.stringify(ingredientChecks));
+    }
+
+    function normalize(text) {
+      return String(text || '').trim().toLowerCase();
+    }
+
+    function escapeHtml(text) {
+      return String(text || '').replace(/[&<>'"]/g, char => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+      })[char]);
+    }
+
+    function getToday() {
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = String(now.getMonth() + 1).padStart(2, '0');
+      const d = String(now.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+
+    function addDays(dateStr, amount) {
+      const date = new Date(`${dateStr}T12:00:00`);
+      date.setDate(date.getDate() + amount);
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, '0');
+      const d = String(date.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+
+    function recipeMatches(recipe, query) {
+      const q = normalize(query);
+      if (!q) return true;
+      const haystack = [
+        recipe.name,
+        recipe.category,
+        ...(recipe.keywords || []),
+        ...(recipe.ingredients || []).map(i => i.name)
+      ].map(normalize).join(' ');
+      return q.split(/\s+/).every(part => haystack.includes(part));
+    }
+
+    function recipeCard(recipe, options = {}) {
+      const ingredientPreview = recipe.ingredients.slice(0, 3).map(i => i.name).join('、');
+      return `
+        <article class="recipe-card" data-recipe-id="${recipe.id}" data-action="${options.action || 'detail'}">
+          <img src="${recipe.image || FALLBACK_IMAGE}" alt="${escapeHtml(recipe.name)}" />
+          <div class="recipe-card-body">
+            <h3>${escapeHtml(recipe.name)}</h3>
+            <div class="meta">${escapeHtml(recipe.category || '未分类')} · ${escapeHtml(ingredientPreview || '暂无食材')}</div>
+            <div class="chips">
+              ${(recipe.keywords || []).slice(0, 3).map(k => `<span class="chip">${escapeHtml(k)}</span>`).join('')}
+            </div>
+          </div>
+        </article>`;
+    }
+
+    function bindRecipeCardClicks(container) {
+      container.querySelectorAll('.recipe-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const recipe = recipes.find(r => r.id === card.dataset.recipeId);
+          if (!recipe) return;
+          if (card.dataset.action === 'pick') {
+            addRecipeToMeal(recipe.id, currentMealType);
+            closeModal('mealPickerModal');
+          } else {
+            showRecipeDetail(recipe.id);
+          }
+        });
+      });
+    }
+
+    function renderRecipes() {
+      const query = $('#recipeSearch').value;
+      const filtered = recipes.filter(r => recipeMatches(r, query));
+      const grid = $('#recipeGrid');
+      grid.innerHTML = filtered.length ? filtered.map(r => recipeCard(r)).join('') : '<div class="empty" style="grid-column:1/-1;">没有找到匹配的菜谱。</div>';
+      bindRecipeCardClicks(grid);
+    }
+
+    function allIngredientNames() {
+      return [...new Set(recipes.flatMap(r => r.ingredients.map(i => i.name.trim())).filter(Boolean))]
+        .sort((a, b) => a.localeCompare(b, 'zh-CN'));
+    }
+
+    function renderPantry() {
+      const names = [...new Set([...allIngredientNames(), ...pantry.map(p => p.name)])];
+      const chips = $('#pantryChips');
+      chips.innerHTML = names.length ? names.map(name => {
+        const selected = pantry.some(p => normalize(p.name) === normalize(name) && p.selected);
+        return `<button class="chip selectable ${selected ? 'selected' : ''}" data-name="${escapeHtml(name)}">${escapeHtml(name)}</button>`;
+      }).join('') : '<div class="empty">先添加菜谱或自定义食材。</div>';
+
+      chips.querySelectorAll('.chip.selectable').forEach(chip => {
+        chip.addEventListener('click', () => togglePantry(chip.dataset.name));
+      });
+
+      const selectedNames = pantry.filter(p => p.selected).map(p => normalize(p.name));
+      const matches = recipes.filter(recipe => {
+        if (!selectedNames.length) return true;
+        const recipeIngredients = recipe.ingredients.map(i => normalize(i.name));
+        return selectedNames.every(selected => recipeIngredients.some(i => i.includes(selected) || selected.includes(i)));
+      });
+      const matchesEl = $('#pantryMatches');
+      matchesEl.innerHTML = matches.length ? matches.map(r => recipeCard(r)).join('') : '<div class="empty" style="grid-column:1/-1;">目前没有同时包含所选食材的菜谱。</div>';
+      bindRecipeCardClicks(matchesEl);
+    }
+
+    function togglePantry(name) {
+      const existing = pantry.find(p => normalize(p.name) === normalize(name));
+      if (existing) existing.selected = !existing.selected;
+      else pantry.push({ name, selected: true });
+      saveAll();
+      renderPantry();
+    }
+
+    function addCustomPantryIngredient() {
+      const input = $('#customPantryInput');
+      const name = input.value.trim();
+      if (!name) return;
+      const existing = pantry.find(p => normalize(p.name) === normalize(name));
+      if (existing) existing.selected = true;
+      else pantry.push({ name, selected: true });
+      input.value = '';
+      saveAll();
+      renderPantry();
+    }
+
+    function renderPlanner() {
+      const date = $('#planDate').value || getToday();
+      const dayPlan = plans[date] || {};
+      const wrapper = $('#mealSections');
+      wrapper.innerHTML = mealTypes.map(meal => {
+        const ids = dayPlan[meal.key] || [];
+        const items = ids.map(id => recipes.find(r => r.id === id)).filter(Boolean);
+        return `
+          <div class="panel meal-section">
+            <div class="meal-header">
+              <h3>${meal.label}</h3>
+              <button class="secondary-btn add-meal-btn" data-meal="${meal.key}">＋ 添加</button>
+            </div>
+            <div class="meal-list">
+              ${items.length ? items.map(recipe => `
+                <div class="meal-item">
+                  <span class="meal-item-name" data-id="${recipe.id}">${escapeHtml(recipe.name)}</span>
+                  <button class="danger-btn remove-meal-btn" data-meal="${meal.key}" data-id="${recipe.id}">移除</button>
+                </div>`).join('') : '<div class="meta">尚未安排。</div>'}
+            </div>
+          </div>`;
+      }).join('');
+
+      $$('.add-meal-btn').forEach(btn => btn.addEventListener('click', () => openMealPicker(btn.dataset.meal)));
+      $$('.remove-meal-btn').forEach(btn => btn.addEventListener('click', () => removeRecipeFromMeal(btn.dataset.id, btn.dataset.meal)));
+      $$('.meal-item-name').forEach(name => name.addEventListener('click', () => showRecipeDetail(name.dataset.id)));
+      renderDailyIngredients(date);
+    }
+
+    function openMealPicker(mealType) {
+      currentMealType = mealType;
+      const label = mealTypes.find(m => m.key === mealType)?.label || '';
+      $('#mealPickerTitle').textContent = `选择${label}菜谱`;
+      $('#mealPickerSearch').value = '';
+      renderMealPicker();
+      openModal('mealPickerModal');
+    }
+
+    function renderMealPicker() {
+      const q = $('#mealPickerSearch').value;
+      const filtered = recipes.filter(r => recipeMatches(r, q));
+      const grid = $('#mealPickerGrid');
+      grid.innerHTML = filtered.length ? filtered.map(r => recipeCard(r, { action: 'pick' })).join('') : '<div class="empty" style="grid-column:1/-1;">没有匹配的菜谱。</div>';
+      bindRecipeCardClicks(grid);
+    }
+
+    function addRecipeToMeal(recipeId, mealType) {
+      const date = $('#planDate').value;
+      plans[date] ||= {};
+      plans[date][mealType] ||= [];
+      if (!plans[date][mealType].includes(recipeId)) plans[date][mealType].push(recipeId);
+      saveAll();
+      renderPlanner();
+    }
+
+    function removeRecipeFromMeal(recipeId, mealType) {
+      const date = $('#planDate').value;
+      if (!plans[date]?.[mealType]) return;
+      plans[date][mealType] = plans[date][mealType].filter(id => id !== recipeId);
+      saveAll();
+      renderPlanner();
+    }
+
+    function renderDailyIngredients(date) {
+      const ids = Object.values(plans[date] || {}).flat();
+      const selectedRecipes = ids.map(id => recipes.find(r => r.id === id)).filter(Boolean);
+      const grouped = new Map();
+      selectedRecipes.forEach(recipe => {
+        recipe.ingredients.forEach(item => {
+          const key = normalize(item.name);
+          if (!grouped.has(key)) grouped.set(key, { name: item.name, amounts: [] });
+          if (item.amount) grouped.get(key).amounts.push(item.amount);
+        });
+      });
+
+      const list = $('#dailyIngredients');
+      const items = [...grouped.entries()];
+      if (!items.length) {
+        list.innerHTML = '<div class="empty">安排菜谱后，这里会自动汇总当天所需食材。</div>';
+        return;
+      }
+      ingredientChecks[date] ||= {};
+      list.innerHTML = items.map(([key, item]) => {
+        const checked = !!ingredientChecks[date][key];
+        const amountText = item.amounts.length ? `（${item.amounts.join(' + ')}）` : '';
+        return `
+          <label class="shopping-item ${checked ? 'checked' : ''}">
+            <input type="checkbox" data-key="${escapeHtml(key)}" ${checked ? 'checked' : ''} />
+            <span><strong>${escapeHtml(item.name)}</strong>${escapeHtml(amountText)}</span>
+          </label>`;
+      }).join('');
+      list.querySelectorAll('input[type="checkbox"]').forEach(box => {
+        box.addEventListener('change', () => {
+          ingredientChecks[date][box.dataset.key] = box.checked;
+          saveAll();
+          renderDailyIngredients(date);
+        });
+      });
+    }
+
+    function addIngredientRow(name = '', amount = '') {
+      const row = document.createElement('div');
+      row.className = 'ingredient-row';
+      row.innerHTML = `
+        <input class="input ingredient-name" placeholder="食材" value="${escapeHtml(name)}" />
+        <input class="input ingredient-amount" placeholder="用量" value="${escapeHtml(amount)}" />
+        <button type="button" class="danger-btn remove-ingredient-btn">×</button>`;
+      row.querySelector('.remove-ingredient-btn').addEventListener('click', () => {
+        row.remove();
+        if (!$('#ingredientRows').children.length) addIngredientRow();
+      });
+      $('#ingredientRows').appendChild(row);
+    }
+
+    function resetRecipeForm() {
+      $('#recipeForm').reset();
+      $('#recipeId').value = '';
+      $('#recipeFormTitle').textContent = '添加菜谱';
+      $('#deleteRecipeBtn').style.display = 'none';
+      $('#ingredientRows').innerHTML = '';
+      addIngredientRow();
+      pendingImageData = '';
+      $('#imagePreview').style.display = 'none';
+      $('#imagePreview').src = '';
+    }
+
+    function openRecipeForm(recipeId = null) {
+      resetRecipeForm();
+      if (recipeId) {
+        const recipe = recipes.find(r => r.id === recipeId);
+        if (!recipe) return;
+        $('#recipeId').value = recipe.id;
+        $('#recipeName').value = recipe.name;
+        $('#recipeCategory').value = recipe.category || '';
+        $('#recipeKeywords').value = (recipe.keywords || []).join(', ');
+        $('#recipeSteps').value = recipe.steps || '';
+        $('#ingredientRows').innerHTML = '';
+        recipe.ingredients.forEach(i => addIngredientRow(i.name, i.amount));
+        pendingImageData = recipe.image || '';
+        if (pendingImageData) {
+          $('#imagePreview').src = pendingImageData;
+          $('#imagePreview').style.display = 'block';
+        }
+        $('#recipeFormTitle').textContent = '编辑菜谱';
+        $('#deleteRecipeBtn').style.display = 'inline-block';
+      }
+      openModal('recipeFormModal');
+    }
+
+    async function compressImage(file, maxWidth = 1200, quality = 0.78) {
+      const dataUrl = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+      const img = await new Promise((resolve, reject) => {
+        const image = new Image();
+        image.onload = () => resolve(image);
+        image.onerror = reject;
+        image.src = dataUrl;
+      });
+      const scale = Math.min(1, maxWidth / img.width);
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(img.width * scale);
+      canvas.height = Math.round(img.height * scale);
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+      return canvas.toDataURL('image/jpeg', quality);
+    }
+
+    function saveRecipe(event) {
+      event.preventDefault();
+      const ingredients = $$('#ingredientRows .ingredient-row').map(row => ({
+        name: row.querySelector('.ingredient-name').value.trim(),
+        amount: row.querySelector('.ingredient-amount').value.trim()
+      })).filter(i => i.name);
+
+      if (!ingredients.length) {
+        alert('请至少添加一种食材。');
+        return;
+      }
+
+      const recipe = {
+        id: $('#recipeId').value || crypto.randomUUID(),
+        name: $('#recipeName').value.trim(),
+        category: $('#recipeCategory').value.trim(),
+        keywords: $('#recipeKeywords').value.split(/[,，]/).map(k => k.trim()).filter(Boolean),
+        image: pendingImageData,
+        ingredients,
+        steps: $('#recipeSteps').value.trim()
+      };
+
+      const index = recipes.findIndex(r => r.id === recipe.id);
+      if (index >= 0) recipes[index] = recipe;
+      else recipes.unshift(recipe);
+
+      saveAll();
+      closeModal('recipeFormModal');
+      renderAll();
+    }
+
+    function deleteCurrentRecipe() {
+      const id = $('#recipeId').value;
+      if (!id || !confirm('确定删除这份菜谱吗？每日规划中的相关安排也会移除。')) return;
+      recipes = recipes.filter(r => r.id !== id);
+      Object.values(plans).forEach(day => {
+        mealTypes.forEach(meal => {
+          if (day[meal.key]) day[meal.key] = day[meal.key].filter(recipeId => recipeId !== id);
+        });
+      });
+      saveAll();
+      closeModal('recipeFormModal');
+      renderAll();
+    }
+
+    function showRecipeDetail(recipeId) {
+      const recipe = recipes.find(r => r.id === recipeId);
+      if (!recipe) return;
+      $('#detailTitle').textContent = recipe.name;
+      $('#recipeDetailBody').innerHTML = `
+        <img class="detail-image" src="${recipe.image || FALLBACK_IMAGE}" alt="${escapeHtml(recipe.name)}" />
+        <div class="chips">
+          ${recipe.category ? `<span class="chip">${escapeHtml(recipe.category)}</span>` : ''}
+          ${(recipe.keywords || []).map(k => `<span class="chip">${escapeHtml(k)}</span>`).join('')}
+        </div>
+        <div class="detail-section">
+          <h3>所需食材</h3>
+          <ul>${recipe.ingredients.map(i => `<li>${escapeHtml(i.name)}${i.amount ? `：${escapeHtml(i.amount)}` : ''}</li>`).join('')}</ul>
+        </div>
+        <div class="detail-section">
+          <h3>制作过程</h3>
+          <div class="steps">${escapeHtml(recipe.steps)}</div>
+        </div>
+        <div class="modal-actions">
+          <button class="secondary-btn" id="editFromDetailBtn">编辑菜谱</button>
+          <button class="ghost-btn" data-close="recipeDetailModal">关闭</button>
+        </div>`;
+      $('#editFromDetailBtn').addEventListener('click', () => {
+        closeModal('recipeDetailModal');
+        openRecipeForm(recipe.id);
+      });
+      $('#recipeDetailBody').querySelector('[data-close]').addEventListener('click', () => closeModal('recipeDetailModal'));
+      openModal('recipeDetailModal');
+    }
+
+    function openModal(id) { document.getElementById(id).classList.add('open'); document.body.style.overflow = 'hidden'; }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow = ''; }
+
+    function renderAll() {
+      renderRecipes();
+      renderPantry();
+      renderPlanner();
+    }
+
+    $$('.tab-btn').forEach(btn => btn.addEventListener('click', () => {
+      $$('.tab-btn').forEach(b => b.classList.toggle('active', b === btn));
+      $$('.page').forEach(page => page.classList.toggle('active', page.id === `page-${btn.dataset.page}`));
+      if (btn.dataset.page === 'pantry') renderPantry();
+      if (btn.dataset.page === 'planner') renderPlanner();
+    }));
+
+    $('#openRecipeFormBtn').addEventListener('click', () => openRecipeForm());
+    $('#recipeSearch').addEventListener('input', renderRecipes);
+    $('#clearSearchBtn').addEventListener('click', () => { $('#recipeSearch').value = ''; renderRecipes(); });
+    $('#addPantryIngredientBtn').addEventListener('click', addCustomPantryIngredient);
+    $('#customPantryInput').addEventListener('keydown', e => { if (e.key === 'Enter') addCustomPantryIngredient(); });
+    $('#addIngredientRowBtn').addEventListener('click', () => addIngredientRow());
+    $('#recipeForm').addEventListener('submit', saveRecipe);
+    $('#deleteRecipeBtn').addEventListener('click', deleteCurrentRecipe);
+    $('#mealPickerSearch').addEventListener('input', renderMealPicker);
+
+    $('#recipeImage').addEventListener('change', async event => {
+      const file = event.target.files[0];
+      if (!file) return;
+      try {
+        pendingImageData = await compressImage(file);
+        $('#imagePreview').src = pendingImageData;
+        $('#imagePreview').style.display = 'block';
+      } catch {
+        alert('图片读取失败，请尝试其他图片。');
+      }
+    });
+
+    $$('[data-close]').forEach(btn => btn.addEventListener('click', () => closeModal(btn.dataset.close)));
+    $$('.modal-backdrop').forEach(backdrop => backdrop.addEventListener('click', event => {
+      if (event.target === backdrop) closeModal(backdrop.id);
+    }));
+
+    $('#planDate').value = getToday();
+    $('#planDate').addEventListener('change', renderPlanner);
+    $('#prevDayBtn').addEventListener('click', () => { $('#planDate').value = addDays($('#planDate').value, -1); renderPlanner(); });
+    $('#nextDayBtn').addEventListener('click', () => { $('#planDate').value = addDays($('#planDate').value, 1); renderPlanner(); });
+    $('#todayBtn').addEventListener('click', () => { $('#planDate').value = getToday(); renderPlanner(); });
+
+    if (!localStorage.getItem(STORAGE_KEYS.recipes)) saveAll();
+    renderAll();
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(console.error));
+    }
+  </script>
+</body>
+</html>
