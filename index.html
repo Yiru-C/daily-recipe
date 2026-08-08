@@ -1174,12 +1174,7 @@
     legacyRecipes: 'shitangDaily.recipes.v2',
     legacyPantry: 'shitangDaily.pantry.v2',
     legacyPlans: 'shitangDaily.plans.v2',
-    legacyChecks: 'shitangDaily.ingredientChecks.v2',
-    oldAppState: 'shitangDaily.appState.v1',
-    oldRecipes: 'shitangDaily.recipes.v1',
-    oldPantry: 'shitangDaily.pantry.v1',
-    oldPlans: 'shitangDaily.plans.v1',
-    oldChecks: 'shitangDaily.ingredientChecks.v1'
+    legacyChecks: 'shitangDaily.ingredientChecks.v2'
   };
 
   const FALLBACK_IMAGE = `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
@@ -1452,147 +1447,25 @@
     };
   }
 
-  function looksLikeRecipeObject(value) {
-    return !!(value && typeof value === 'object' && !Array.isArray(value) && (
-      typeof value.name === 'string' && value.name.trim() && (
-        Array.isArray(value.ingredients) || Array.isArray(value.seasonings) || Array.isArray(value.steps) || typeof value.steps === 'string' || typeof value.category === 'string'
-      )
-    ));
-  }
-
-  function collectRecipesFromAnyStoredData() {
-    const results = [];
-    const seen = new Set();
-
-    const pushRecipes = (items) => {
-      if (!Array.isArray(items)) return;
-      items.forEach(item => {
-        const normalized = normalizeRecipe(item);
-        if (!normalized.name) return;
-        const fingerprint = `${normalized.name}::${JSON.stringify(normalized.ingredients)}::${JSON.stringify(normalized.seasonings)}::${normalized.steps}`;
-        if (seen.has(fingerprint)) return;
-        seen.add(fingerprint);
-        results.push(normalized);
-      });
-    };
-
-    try {
-      for (let i = 0; i < localStorage.length; i += 1) {
-        const key = localStorage.key(i);
-        if (!key) continue;
-        let parsed;
-        try {
-          parsed = JSON.parse(localStorage.getItem(key));
-        } catch {
-          continue;
-        }
-
-        if (Array.isArray(parsed)) {
-          if (parsed.some(looksLikeRecipeObject)) {
-            pushRecipes(parsed);
-          }
-          continue;
-        }
-
-        if (parsed && typeof parsed === 'object') {
-          if (Array.isArray(parsed.recipes)) pushRecipes(parsed.recipes);
-          if (looksLikeRecipeObject(parsed)) pushRecipes([parsed]);
-        }
-      }
-    } catch {
-      return [];
-    }
-
-    return results;
-  }
-
   function loadState() {
     const snapshot = loadJson(STORAGE_KEYS.appState, null);
-    const directRecipes = loadJson(STORAGE_KEYS.recipes, null);
-    const legacyRecipes = loadJson(STORAGE_KEYS.legacyRecipes, null);
-    const oldRecipes = loadJson(STORAGE_KEYS.oldRecipes, null);
-    const directPantry = loadJson(STORAGE_KEYS.pantry, null);
-    const legacyPantry = loadJson(STORAGE_KEYS.legacyPantry, null);
-    const oldPantry = loadJson(STORAGE_KEYS.oldPantry, null);
-    const directPlans = loadJson(STORAGE_KEYS.plans, null);
-    const legacyPlans = loadJson(STORAGE_KEYS.legacyPlans, null);
-    const oldPlans = loadJson(STORAGE_KEYS.oldPlans, null);
-    const directChecks = loadJson(STORAGE_KEYS.checks, null);
-    const legacyChecks = loadJson(STORAGE_KEYS.legacyChecks, null);
-    const oldChecks = loadJson(STORAGE_KEYS.oldChecks, null);
-    const oldAppState = loadJson(STORAGE_KEYS.oldAppState, null);
-    const legacyAppState = loadJson(STORAGE_KEYS.legacyAppState, null);
-    const salvagedRecipes = collectRecipesFromAnyStoredData();
+    if (snapshot && typeof snapshot === 'object') {
+      return normalizeLoadedState(snapshot);
+    }
 
-    const pickArray = (...arrays) => {
-      for (const arr of arrays) {
-        if (Array.isArray(arr) && arr.length) return arr;
-      }
-      for (const arr of arrays) {
-        if (Array.isArray(arr)) return arr;
-      }
-      return null;
-    };
+    const legacySnapshot = loadJson(STORAGE_KEYS.legacyAppState, null);
+    if (legacySnapshot && typeof legacySnapshot === 'object') {
+      return normalizeLoadedState(legacySnapshot);
+    }
 
-    const pickObject = (...objects) => {
-      for (const obj of objects) {
-        if (obj && typeof obj === 'object' && !Array.isArray(obj) && Object.keys(obj).length) return obj;
-      }
-      for (const obj of objects) {
-        if (obj && typeof obj === 'object' && !Array.isArray(obj)) return obj;
-      }
-      return null;
-    };
-
-    const source = {
-      ...(snapshot && typeof snapshot === 'object' ? snapshot : {}),
-      recipes: pickArray(
-        snapshot && snapshot.recipes,
-        directRecipes,
-        legacyRecipes,
-        oldRecipes,
-        oldAppState?.recipes,
-        legacyAppState?.recipes,
-        salvagedRecipes,
-        DEFAULT_RECIPES
-      ) || DEFAULT_RECIPES,
-      pantry: pickArray(
-        snapshot && snapshot.pantry,
-        directPantry,
-        legacyPantry,
-        oldPantry,
-        oldAppState?.pantry,
-        legacyAppState?.pantry,
-        []
-      ) || [],
-      plans: pickObject(
-        snapshot && snapshot.plans,
-        directPlans,
-        legacyPlans,
-        oldPlans,
-        oldAppState?.plans,
-        legacyAppState?.plans,
-        {}
-      ) || {},
-      ingredientChecks: pickObject(
-        snapshot && snapshot.ingredientChecks,
-        directChecks,
-        legacyChecks,
-        oldChecks,
-        oldAppState?.ingredientChecks,
-        legacyAppState?.ingredientChecks,
-        {}
-      ) || {},
-      mealShares: pickObject(
-        snapshot && snapshot.mealShares,
-        oldAppState?.mealShares,
-        legacyAppState?.mealShares,
-        {}
-      ) || {},
-      nutritionView: (snapshot && snapshot.nutritionView) || oldAppState?.nutritionView || legacyAppState?.nutritionView || 'day'
-    };
-
-    return normalizeLoadedState(source);
+    return normalizeLoadedState({
+      recipes: loadJson(STORAGE_KEYS.recipes, loadJson(STORAGE_KEYS.legacyRecipes, DEFAULT_RECIPES)),
+      pantry: loadJson(STORAGE_KEYS.pantry, loadJson(STORAGE_KEYS.legacyPantry, [])),
+      plans: loadJson(STORAGE_KEYS.plans, loadJson(STORAGE_KEYS.legacyPlans, {})),
+      ingredientChecks: loadJson(STORAGE_KEYS.checks, loadJson(STORAGE_KEYS.legacyChecks, {})),
+      mealShares: {},
+      nutritionView: 'day'
+    });
   }
 
   function saveAll() {
@@ -1618,12 +1491,6 @@
     saveJson(STORAGE_KEYS.legacyPantry, state.pantry);
     saveJson(STORAGE_KEYS.legacyPlans, state.plans);
     saveJson(STORAGE_KEYS.legacyChecks, state.ingredientChecks);
-
-    saveJson(STORAGE_KEYS.oldAppState, snapshot);
-    saveJson(STORAGE_KEYS.oldRecipes, state.recipes);
-    saveJson(STORAGE_KEYS.oldPantry, state.pantry);
-    saveJson(STORAGE_KEYS.oldPlans, state.plans);
-    saveJson(STORAGE_KEYS.oldChecks, state.ingredientChecks);
   }
 
   function getMealShare(date, mealKey) {
