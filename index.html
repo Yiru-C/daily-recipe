@@ -951,7 +951,7 @@
     saveAll();
   }
 
-  function getRecipeTags(recipe) {  function getRecipeTags(recipe) {
+  function getRecipeTags(recipe) {
     return Array.isArray(recipe.tags) ? recipe.tags : [];
   }
 
@@ -1283,7 +1283,7 @@
     container.innerHTML = `<div class="nutrition-summary-grid">${cards}</div>`;
   }
 
-  function renderDailyIngredients(date) {  function renderDailyIngredients(date) {
+  function renderDailyIngredients(date) {
     state.ingredientChecks[date] ||= {};
     const sections = combineMealItems(date);
     const list = $('#dailyIngredients');
@@ -1397,7 +1397,7 @@
     renderDailyIngredients(date);
   }
 
-  function renderStepEditor(containerId, steps = []) {  function renderStepEditor(containerId, steps = []) {
+  function renderStepEditor(containerId, steps = []) {
     const container = document.getElementById(containerId);
     if (!container) return;
     const values = normalizeSteps(steps);
@@ -1792,7 +1792,7 @@
     openModal('recipeDetailModal');
   }
 
-  function openMealPicker(mealType) {  function openMealPicker(mealType) {
+  function openMealPicker(mealType) {
     state.currentMealType = mealType;
     $('#mealPickerTitle').textContent = `选择${mealTypes.find(m => m.key === mealType)?.label || ''}菜谱`;
     $('#mealPickerSearch').value = '';
@@ -1845,7 +1845,7 @@
     });
   }
 
-  function renderMealSectionsAndDaily(date) {  function renderMealSectionsAndDaily(date) {
+  function renderMealSectionsAndDaily(date) {
     renderPlanner();
     renderDailyIngredients(date);
   }
