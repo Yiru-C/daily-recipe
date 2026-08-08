@@ -545,8 +545,8 @@
       .search-row { grid-template-columns: 1fr; }
     }
   </style>
-<style>
 
+<style>
     .modal-backdrop.nested { z-index: 110; }
     .nutrition-summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 12px; }
     .nutrition-card { background: white; border: 1px solid var(--line); border-radius: 14px; padding: 12px; }
@@ -570,8 +570,179 @@
     .detail-serving-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: end; margin-top: 14px; }
     .detail-summary-grid { display: grid; gap: 8px; }
     .detail-summary-item { padding: 9px 10px; border: 1px solid var(--line); background: white; border-radius: 12px; line-height: 1.5; }
-
 </style>
+
+  <style>
+    .planner-item {
+      grid-template-columns: 1fr auto auto;
+    }
+
+    .planner-serving-wrap {
+      gap: 4px;
+    }
+
+    .planner-serving-stepper {
+      gap: 4px;
+    }
+
+    .planner-serving-stepper .stepper button {
+      width: 26px;
+      height: 26px;
+      border-radius: 7px;
+      padding: 0;
+      font-size: 13px;
+      line-height: 1;
+    }
+
+    .planner-serving-stepper .input {
+      width: 46px;
+      padding: 5px 4px;
+      font-size: 13px;
+    }
+
+    .planner-serving-unit {
+      font-size: 12px;
+    }
+
+    .meal-share-control {
+      gap: 4px;
+    }
+
+    .meal-share-control .stepper button {
+      width: 26px;
+      height: 26px;
+      border-radius: 7px;
+      padding: 0;
+      font-size: 13px;
+      line-height: 1;
+    }
+
+    .meal-share-control .input {
+      width: 48px;
+      padding: 5px 4px;
+      font-size: 13px;
+    }
+
+    .add-meal-btn,
+    .remove-meal-btn {
+      padding: 5px 8px;
+      min-width: 24px;
+      font-size: 13px;
+      line-height: 1;
+    }
+
+    .nutrition-day-grid {
+      grid-template-columns: minmax(0, 1.1fr) minmax(220px, 0.9fr);
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .nutrition-pie {
+      width: 160px;
+      height: 160px;
+    }
+
+    .nutrition-pie-center {
+      inset: 24px;
+    }
+
+    .nutrition-legend-item.status-low .nutrition-status {
+      color: #d07a00;
+    }
+
+    .nutrition-legend-item.status-ok .nutrition-status {
+      color: #748b59;
+    }
+
+    .nutrition-legend-item.status-high .nutrition-status {
+      color: #b84444;
+    }
+
+    .nutrition-legend-item.status-low {
+      border-color: rgba(208, 122, 0, 0.28);
+    }
+
+    .nutrition-legend-item.status-ok {
+      border-color: rgba(116, 139, 89, 0.28);
+    }
+
+    .nutrition-legend-item.status-high {
+      border-color: rgba(184, 68, 68, 0.28);
+    }
+
+    .nutrition-legend-value {
+      white-space: nowrap;
+    }
+
+    .nutrition-status {
+      font-weight: 800;
+    }
+
+    @media (max-width: 640px) {
+      .nutrition-day-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .nutrition-summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .nutrition-chart {
+        gap: 10px;
+      }
+
+      .nutrition-pie {
+        width: 140px;
+        height: 140px;
+      }
+
+      .nutrition-pie::after {
+        inset: 20px;
+      }
+
+      .nutrition-pie-center {
+        inset: 20px;
+        padding: 8px;
+        font-size: 14px;
+      }
+
+      .nutrition-pie-center span {
+        font-size: 11px;
+      }
+
+      .planner-item {
+        grid-template-columns: 1fr auto auto;
+        gap: 6px;
+      }
+
+      .planner-serving-stepper .stepper button {
+        width: 24px;
+        height: 24px;
+      }
+
+      .planner-serving-stepper .input {
+        width: 42px;
+      }
+
+      .meal-header {
+        flex-wrap: wrap;
+        align-items: flex-start;
+      }
+
+      .meal-share-control {
+        gap: 3px;
+      }
+
+      .meal-share-control .stepper button {
+        width: 24px;
+        height: 24px;
+      }
+
+      .meal-share-control .input {
+        width: 42px;
+      }
+    }
+  </style>
 </head>
 <body>
   <main class="app">
@@ -1408,29 +1579,25 @@
   }
 
 
-  function calcDailyNutrition(date) {
+  
+function calcDailyNutrition(date) {
     const totals = { calories: 0, carbs: 0, protein: 0, fat: 0 };
+    const perPerson = { calories: 0, carbs: 0, protein: 0, fat: 0 };
     let totalSharePeople = 0;
 
     mealTypes.forEach(meal => {
       const mealSummary = calcMealNutrition(date, meal.key);
       ['calories', 'carbs', 'protein', 'fat'].forEach(field => {
         totals[field] += mealSummary.totals[field];
+        perPerson[field] += mealSummary.perPerson[field];
       });
       totalSharePeople += mealSummary.sharePeople;
     });
 
-    const perPerson = totalSharePeople > 0 ? {
-      calories: totals.calories / totalSharePeople,
-      carbs: totals.carbs / totalSharePeople,
-      protein: totals.protein / totalSharePeople,
-      fat: totals.fat / totalSharePeople
-    } : { calories: 0, carbs: 0, protein: 0, fat: 0 };
-
     const macroCalories = {
-      carbs: totals.carbs * 4,
-      protein: totals.protein * 4,
-      fat: totals.fat * 9
+      carbs: perPerson.carbs * 4,
+      protein: perPerson.protein * 4,
+      fat: perPerson.fat * 9
     };
 
     const macroTotalCalories = macroCalories.carbs + macroCalories.protein + macroCalories.fat;
@@ -1443,47 +1610,35 @@
     return { totals, perPerson, totalSharePeople, macroCalories, macroRatios, macroTotalCalories };
   }
 
-  function buildNutritionAdvice(ratios) {
-    const ranges = {
-      carbs: [45, 65],
-      protein: [10, 35],
-      fat: [25, 35]
-    };
-
-    const parts = [
-      ['碳水', ratios.carbs, ranges.carbs],
-      ['蛋白质', ratios.protein, ranges.protein],
-      ['脂肪', ratios.fat, ranges.fat]
-    ].map(([label, value, [min, max]]) => {
-      if (!Number.isFinite(value) || value === 0) {
-        return { label, text: '暂无数据' };
-      }
-      if (value < min) {
-        return { label, text: `${label}不足` };
-      }
-      if (value > max) {
-        return { label, text: `${label}过多` };
-      }
-      return { label, text: `${label}适中` };
-    });
-
-    return parts;
+  function getMacroStatus(value, min, max) {
+    if (!Number.isFinite(value)) {
+      return { text: '暂无数据', className: 'status-none' };
+    }
+    if (value < min) {
+      return { text: '不足', className: 'status-low' };
+    }
+    if (value > max) {
+      return { text: '过多', className: 'status-high' };
+    }
+    return { text: '适中', className: 'status-ok' };
   }
 
-  function renderMacroChart(macroCalories, macroRatios) {
-    const segments = [
-      { key: 'carbs', label: '碳水', color: '#d66b3d', value: macroCalories.carbs, percent: macroRatios.carbs },
-      { key: 'protein', label: '蛋白质', color: '#748b59', value: macroCalories.protein, percent: macroRatios.protein },
-      { key: 'fat', label: '脂肪', color: '#6b79b6', value: macroCalories.fat, percent: macroRatios.fat }
-    ].filter(item => item.value > 0);
+  function renderMacroChart(summary) {
+    const macroDefs = [
+      { key: 'carbs', label: '碳水', color: '#d66b3d', value: summary.macroCalories.carbs, percent: summary.macroRatios.carbs, range: [45, 65] },
+      { key: 'protein', label: '蛋白质', color: '#748b59', value: summary.macroCalories.protein, percent: summary.macroRatios.protein, range: [10, 35] },
+      { key: 'fat', label: '脂肪', color: '#6b79b6', value: summary.macroCalories.fat, percent: summary.macroRatios.fat, range: [25, 35] }
+    ];
 
+    const segments = macroDefs.filter(item => item.value > 0);
     if (!segments.length) {
-      return '<div class="empty">暂时没有可视化数据。</div>';
+      return '<div class="nutrition-chart-card"><div class="empty">暂时没有可视化数据。</div></div>';
     }
 
+    const total = segments.reduce((sum, item) => sum + item.value, 0);
     let current = 0;
     const gradient = segments.map(item => {
-      const next = current + (item.value / segments.reduce((sum, seg) => sum + seg.value, 0)) * 100;
+      const next = current + (item.value / total) * 100;
       const chunk = `${item.color} ${current.toFixed(4)}% ${next.toFixed(4)}%`;
       current = next;
       return chunk;
@@ -1491,23 +1646,21 @@
 
     const center = `
       <div class="nutrition-pie-center">
-        ${formatNumber(macroCalories.carbs + macroCalories.protein + macroCalories.fat)} kcal
-        <span>来自碳水 / 蛋白质 / 脂肪</span>
+        ${formatNumber(summary.perPerson.calories)} kcal
+        <span>全天人均</span>
       </div>`;
 
-    const legend = segments.map(item => `
-      <div class="nutrition-legend-item">
-        <div class="nutrition-legend-label">
-          <span class="nutrition-legend-swatch" style="background:${item.color};"></span>
-          <span>${escapeHtml(item.label)}</span>
-        </div>
-        <span>${formatNumber(item.percent)}% · ${formatNumber(item.value)} kcal</span>
-      </div>
-    `).join('');
-
-    const advice = buildNutritionAdvice(macroRatios).map(item => `
-      <div class="nutrition-advice-item"><strong>${escapeHtml(item.label)}</strong>${escapeHtml(item.text)}</div>
-    `).join('');
+    const legend = macroDefs.map(item => {
+      const status = getMacroStatus(item.percent, item.range[0], item.range[1]);
+      return `
+        <div class="nutrition-legend-item ${status.className}">
+          <div class="nutrition-legend-label">
+            <span class="nutrition-legend-swatch" style="background:${item.color};"></span>
+            <span>${escapeHtml(item.label)}</span>
+          </div>
+          <span class="nutrition-legend-value">${formatNumber(item.percent)}% · <strong class="nutrition-status ${status.className}">${status.text}</strong></span>
+        </div>`;
+    }).join('');
 
     return `
       <div class="nutrition-chart-card">
@@ -1516,12 +1669,11 @@
             ${center}
           </div>
           <div class="nutrition-legend">${legend}</div>
-          <div class="nutrition-advice">${advice}</div>
         </div>
       </div>`;
   }
 
-  function renderNutritionSummary(date) {
+function renderNutritionSummary(date) {
     const container = $('#dailyNutritionSummary');
     const toggleBtn = $('#nutritionModeBtn');
     if (!container) return;
@@ -1575,10 +1727,10 @@
     }
 
     const summary = calcDailyNutrition(date);
-    const hasNutrition = summary.macroTotalCalories > 0 || ['calories', 'carbs', 'protein', 'fat'].some(field => summary.totals[field] > 0);
+    const hasNutrition = summary.perPerson.calories > 0 || summary.macroTotalCalories > 0 || ['calories', 'carbs', 'protein', 'fat'].some(field => summary.perPerson[field] > 0);
 
     if (!hasNutrition) {
-      container.innerHTML = '<div class="empty">先安排菜谱并填写营养信息后，这里会显示全天人均营养、扇形图和建议。</div>';
+      container.innerHTML = '<div class="empty">先安排菜谱并填写营养信息后，这里会显示全天人均营养和扇形图。</div>';
       return;
     }
 
@@ -1605,7 +1757,7 @@
         <div>
           <div class="nutrition-summary-grid" style="margin-top:0;">${dayCards}</div>
         </div>
-        ${renderMacroChart(summary.macroCalories, summary.macroRatios)}
+        ${renderMacroChart(summary)}
       </div>`;
   }
 
@@ -1654,7 +1806,8 @@
     renderNutritionSummary(date);
   }
 
-  function renderPlanner() {
+  
+function renderPlanner() {
     const date = $('#planDate').value || getToday();
     const wrapper = $('#mealSections');
     if (!wrapper) return;
@@ -1671,7 +1824,11 @@
               <div class="planner-item-name" data-id="${recipe.id}">${escapeHtml(recipe.name)}</div>
             </div>
             <div class="planner-serving-wrap">
-              <input type="number" min="1" step="1" value="${item.servings}" data-meal="${meal.key}" data-id="${recipe.id}" class="input planner-servings" />
+              <div class="stepper planner-serving-stepper">
+                <button type="button" class="ghost-btn planner-serving-minus" data-meal="${meal.key}" data-id="${recipe.id}">－</button>
+                <input type="number" min="1" step="1" value="${item.servings}" data-meal="${meal.key}" data-id="${recipe.id}" class="input planner-servings" />
+                <button type="button" class="ghost-btn planner-serving-plus" data-meal="${meal.key}" data-id="${recipe.id}">＋</button>
+              </div>
               <span class="planner-serving-unit">份</span>
             </div>
             <button class="danger-btn remove-meal-btn" data-meal="${meal.key}" data-id="${recipe.id}">-</button>
@@ -1706,6 +1863,20 @@
     $$('.planner-servings').forEach(input => input.addEventListener('change', () => updateMealServings(input.dataset.id, input.dataset.meal, input.value)));
     $$('.planner-item-name').forEach(name => name.addEventListener('click', () => showRecipeDetail(name.dataset.id)));
 
+    $$('.planner-serving-stepper').forEach(stepper => {
+      const input = stepper.querySelector('.planner-servings');
+      const mealKey = input.dataset.meal;
+      const recipeId = input.dataset.id;
+      const minus = stepper.querySelector('.planner-serving-minus');
+      const plus = stepper.querySelector('.planner-serving-plus');
+      bindStepper(input, minus, plus, {
+        step: 1,
+        min: 1,
+        precision: 0,
+        onChange: value => updateMealServings(recipeId, mealKey, value)
+      });
+    });
+
     $$('.meal-share-input').forEach(input => {
       const mealKey = input.dataset.meal;
       const minus = wrapper.querySelector(`.meal-share-minus[data-meal="${mealKey}"]`);
@@ -1723,7 +1894,6 @@
 
     renderDailyIngredients(date);
   }
-
   function renderStepEditor(containerId, steps = []) {
     const container = document.getElementById(containerId);
     if (!container) return;
