@@ -392,6 +392,27 @@
         <div id="pantryMatches" class="recipe-grid"></div>
       </div>
     </section>
+
+    <section class="page" id="page-planner">
+      <div class="panel">
+        <div class="date-nav">
+          <button class="ghost-btn" id="prevDayBtn">←</button>
+          <input id="planDate" class="input" type="date" />
+          <button class="ghost-btn" id="nextDayBtn">→</button>
+        </div>
+        <button class="secondary-btn" id="todayBtn" style="width:100%;margin-top:10px;">回到今天</button>
+      </div>
+
+      <div id="mealSections"></div>
+
+      <div class="panel">
+        <h2>当天所需食材</h2>
+        <p class="meta">勾选已准备好的食材。相同食材会自动合并显示。</p>
+        <div id="dailyIngredients" class="shopping-list"></div>
+      </div>
+    </section>
+  </main>
+
   <div class="modal-backdrop" id="recipeFormModal">
     <div class="modal">
       <div class="modal-header">
@@ -482,10 +503,15 @@
   </div>
   <script>
     const STORAGE_KEYS = {
+      appState: 'shitangDaily.appState.v1',
       recipes: 'shitangDaily.recipes.v2',
       pantry: 'shitangDaily.pantry.v2',
       plans: 'shitangDaily.plans.v2',
-      checks: 'shitangDaily.ingredientChecks.v2'
+      checks: 'shitangDaily.ingredientChecks.v2',
+      legacyRecipes: 'shitangDaily.recipes.v1',
+      legacyPantry: 'shitangDaily.pantry.v1',
+      legacyPlans: 'shitangDaily.plans.v1',
+      legacyChecks: 'shitangDaily.ingredientChecks.v1'
     };
 
     const FALLBACK_IMAGE = `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
@@ -564,11 +590,50 @@
       }
     }
 
+    function normalizeLoadedState(rawState) {
+      const source = rawState && typeof rawState === 'object' ? rawState : {};
+      return {
+        recipes: migrateRecipes(source.recipes || []),
+        pantry: Array.isArray(source.pantry) ? source.pantry : [],
+        plans: migratePlans(source.plans || {}),
+        ingredientChecks: source.ingredientChecks && typeof source.ingredientChecks === 'object' ? source.ingredientChecks : {}
+      };
+    }
+
+    function loadState() {
+      const snapshot = loadJson(STORAGE_KEYS.appState, null);
+      if (snapshot && typeof snapshot === 'object') {
+        return normalizeLoadedState(snapshot);
+      }
+
+      const legacyState = {
+        recipes: loadJson(STORAGE_KEYS.recipes, loadJson(STORAGE_KEYS.legacyRecipes, DEFAULT_RECIPES)),
+        pantry: loadJson(STORAGE_KEYS.pantry, loadJson(STORAGE_KEYS.legacyPantry, [])),
+        plans: loadJson(STORAGE_KEYS.plans, loadJson(STORAGE_KEYS.legacyPlans, {})),
+        ingredientChecks: loadJson(STORAGE_KEYS.checks, loadJson(STORAGE_KEYS.legacyChecks, {}))
+      };
+      return normalizeLoadedState(legacyState);
+    }
+
     function saveAll() {
+      const snapshot = {
+        version: 1,
+        savedAt: new Date().toISOString(),
+        recipes: state.recipes,
+        pantry: state.pantry,
+        plans: state.plans,
+        ingredientChecks: state.ingredientChecks
+      };
+
+      localStorage.setItem(STORAGE_KEYS.appState, JSON.stringify(snapshot));
       localStorage.setItem(STORAGE_KEYS.recipes, JSON.stringify(state.recipes));
       localStorage.setItem(STORAGE_KEYS.pantry, JSON.stringify(state.pantry));
       localStorage.setItem(STORAGE_KEYS.plans, JSON.stringify(state.plans));
       localStorage.setItem(STORAGE_KEYS.checks, JSON.stringify(state.ingredientChecks));
+      localStorage.setItem(STORAGE_KEYS.legacyRecipes, JSON.stringify(state.recipes));
+      localStorage.setItem(STORAGE_KEYS.legacyPantry, JSON.stringify(state.pantry));
+      localStorage.setItem(STORAGE_KEYS.legacyPlans, JSON.stringify(state.plans));
+      localStorage.setItem(STORAGE_KEYS.legacyChecks, JSON.stringify(state.ingredientChecks));
     }
 
     function normalize(text) {
@@ -921,6 +986,8 @@
     function renderPlanner() {
       const date = $('#planDate').value || getToday();
       const wrapper = $('#mealSections');
+      const list = $('#dailyIngredients');
+      if (!wrapper || !list) return;
 
       wrapper.innerHTML = mealTypes.map(meal => {
         const items = getPlanItemsForDay(date, meal.key);
@@ -1048,6 +1115,7 @@
       state.ingredientChecks[date] ||= {};
       const sections = combineMealItems(date);
       const list = $('#dailyIngredients');
+      if (!list) return;
 
       const renderSection = (title, items) => {
         if (!items.length) return '';
@@ -1376,10 +1444,11 @@
     $('#nextDayBtn').addEventListener('click', () => { $('#planDate').value = addDays($('#planDate').value, 1); renderPlanner(); });
     $('#todayBtn').addEventListener('click', () => { $('#planDate').value = getToday(); renderPlanner(); });
 
-    state.recipes = migrateRecipes(loadJson(STORAGE_KEYS.recipes, DEFAULT_RECIPES));
-    state.pantry = loadJson(STORAGE_KEYS.pantry, []);
-    state.plans = migratePlans(loadJson(STORAGE_KEYS.plans, {}));
-    state.ingredientChecks = loadJson(STORAGE_KEYS.checks, {});
+    const loadedState = loadState();
+    state.recipes = loadedState.recipes;
+    state.pantry = loadedState.pantry;
+    state.plans = loadedState.plans;
+    state.ingredientChecks = loadedState.ingredientChecks;
 
     saveAll();
     renderAll();
