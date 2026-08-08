@@ -136,7 +136,7 @@
     }
     .planner-item {
       display: grid;
-      grid-template-columns: 1fr 86px auto;
+      grid-template-columns: 1fr 72px auto;
       gap: 8px;
       align-items: center;
       padding: 10px 12px;
@@ -155,11 +155,212 @@
       margin-top: 3px;
     }
     .planner-item input[type="number"] {
-      width: 86px;
+      width: 72px;
+      text-align: center;
+    }
+
+    .planner-serving-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      justify-content: flex-end;
+      white-space: nowrap;
+    }
+
+    .planner-serving-unit {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .meal-header-left {
+      display: grid;
+      gap: 10px;
+    }
+
+    .meal-share-control {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: nowrap;
+      white-space: nowrap;
+      font-size: 13px;
+    }
+
+    .meal-share-control .stepper {
+      gap: 4px;
+    }
+
+    .meal-share-control .stepper button {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      padding: 0;
+      font-size: 14px;
+      line-height: 1;
+    }
+
+    .meal-share-control .input {
+      width: 52px;
+      text-align: center;
+      padding: 5px 4px;
+      font-size: 13px;
+    }
+
+    .nutrition-panel-header {
+      align-items: center;
+    }
+
+    .nutrition-mode-btn {
+      padding: 6px 10px;
+      font-size: 13px;
+      border-radius: 10px;
+    }
+
+    .nutrition-day-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(220px, 0.9fr);
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .nutrition-day-card, .nutrition-chart-card {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px;
+    }
+
+    .nutrition-day-card .value {
+      font-size: 20px;
+      font-weight: 800;
+      margin-top: 6px;
+    }
+
+    .nutrition-day-card .label {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .nutrition-chart {
+      display: grid;
+      gap: 12px;
+      justify-items: center;
+    }
+
+    .nutrition-pie {
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      position: relative;
+      background: conic-gradient(var(--primary) 0 0);
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.04);
+    }
+
+    .nutrition-pie::after {
+      content: '';
+      position: absolute;
+      inset: 24px;
+      border-radius: 50%;
+      background: white;
+      box-shadow: inset 0 0 0 1px var(--line);
+    }
+
+    .nutrition-pie-center {
+      position: absolute;
+      inset: 24px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 10px;
+      z-index: 1;
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
+    .nutrition-pie-center span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+      margin-top: 4px;
+    }
+
+    .nutrition-legend {
+      display: grid;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .nutrition-legend-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 13px;
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: rgba(255,255,255,.8);
+    }
+
+    .nutrition-legend-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .nutrition-legend-swatch {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex: none;
+    }
+
+    .nutrition-advice {
+      display: grid;
+      gap: 6px;
+      width: 100%;
+      margin-top: 2px;
+    }
+
+    .nutrition-advice-item {
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.82);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .nutrition-advice-item strong {
+      display: inline-block;
+      margin-right: 6px;
+    }
+
+    .meal-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .add-meal-btn {
+      padding: 6px 10px;
+      min-width: 30px;
+      font-size: 14px;
+      line-height: 1;
+    }
+
+    .remove-meal-btn {
+      padding: 6px 10px;
+      min-width: 30px;
+      font-size: 14px;
+      line-height: 1;
     }
     .detail-serving-row {
       display: grid;
-      grid-template-columns: 1fr 160px;
+      grid-template-columns: 1fr 180px;
       gap: 10px;
       align-items: end;
       margin-top: 14px;
@@ -377,7 +578,7 @@
     <header class="topbar">
       <div class="brand">
         <h1>食堂日常</h1>
-        <p>记录喜欢的菜，安排每一天的饭。</p>
+        <p>吃饱喝足，舒舒服服。</p>
       </div>
       <button class="primary-btn" id="openRecipeFormBtn">＋ 添加菜谱</button>
     </header>
@@ -409,7 +610,7 @@
     <section class="page" id="page-pantry">
       <div class="panel">
         <h2>食材寻菜</h2>
-        <p class="meta">选择家里现有的食材，快速筛出可做菜谱</p>
+        <p class="meta">想用什么食材？</p>
         <div class="search-row" style="margin-top:12px;">
           <input id="customPantryInput" class="input" placeholder="添加一种食材，例如：番茄" />
           <button class="secondary-btn" id="addPantryIngredientBtn">添加食材</button>
@@ -417,7 +618,7 @@
         <div id="pantryChips" class="chips" style="margin-top:14px;"></div>
       </div>
       <div class="panel">
-        <h2>可以做什么？</h2>
+        <h2>可以做这些：</h2>
         <div id="pantryMatches" class="recipe-grid"></div>
       </div>
     </section>
@@ -433,8 +634,10 @@
       </div>
 
       <div class="panel">
-        <h2>当天营养</h2>
-        <p class="meta">按规划份数汇总，并显示人均数值。</p>
+        <div class="meal-header nutrition-panel-header">
+          <h2>当日营养（人均）</h2>
+          <button type="button" class="ghost-btn nutrition-mode-btn" id="nutritionModeBtn">每餐</button>
+        </div>
         <div id="dailyNutritionSummary"></div>
       </div>
 
@@ -442,7 +645,6 @@
 
       <div class="panel">
         <h2>当天所需食材</h2>
-        <p class="meta">勾选已准备好的食材。相同食材会自动合并显示。</p>
         <div id="dailyIngredients" class="shopping-list"></div>
       </div>
     </section>
@@ -468,12 +670,6 @@
               <label>标签
                 <input id="recipeTags" class="input" placeholder="用逗号分隔，例如：快手, 下饭" />
               </label>
-            </div>
-            <div class="servings-row">
-              <label>默认份数
-                <input id="recipeServings" class="input" type="number" min="1" step="1" value="2" />
-              </label>
-              <div class="help">未填写时默认按 2 人份计算。</div>
             </div>
 
             <div class="nutrition-block">
@@ -553,7 +749,7 @@
       </div>
       <div class="modal-body">
         <input id="mealPickerSearch" class="input" placeholder="搜索菜名、食材、分类或标签" />
-        <div class="meal-picker-hint">点击菜谱后会在内置面板里选择这道菜要做几人份。</div>
+        <div class="meal-picker-hint">点击菜谱后会在内置面板里选择这道菜要做几份的用量。</div>
         <div id="mealPickerGrid" class="recipe-grid" style="margin-top:14px;"></div>
       </div>
     </div>
@@ -571,7 +767,7 @@
         <div class="stepper-wrap" style="margin-top:14px;">
           <div class="stepper">
             <button type="button" class="ghost-btn" id="mealServingMinus">－</button>
-            <input id="mealServingInput" class="input" type="number" min="1" step="1" value="2" />
+            <input id="mealServingInput" class="input" type="number" min="1" step="1" value="1" />
             <button type="button" class="ghost-btn" id="mealServingPlus">＋</button>
           </div>
         </div>
@@ -586,16 +782,16 @@
 <script>
 (() => {
   const STORAGE_KEYS = {
-    appState: 'shitangDaily.appState.v2',
-    recipes: 'shitangDaily.recipes.v2',
-    pantry: 'shitangDaily.pantry.v2',
-    plans: 'shitangDaily.plans.v2',
-    checks: 'shitangDaily.ingredientChecks.v2',
-    legacyAppState: 'shitangDaily.appState.v1',
-    legacyRecipes: 'shitangDaily.recipes.v1',
-    legacyPantry: 'shitangDaily.pantry.v1',
-    legacyPlans: 'shitangDaily.plans.v1',
-    legacyChecks: 'shitangDaily.ingredientChecks.v1'
+    appState: 'shitangDaily.appState.v3',
+    recipes: 'shitangDaily.recipes.v3',
+    pantry: 'shitangDaily.pantry.v3',
+    plans: 'shitangDaily.plans.v3',
+    checks: 'shitangDaily.ingredientChecks.v3',
+    legacyAppState: 'shitangDaily.appState.v2',
+    legacyRecipes: 'shitangDaily.recipes.v2',
+    legacyPantry: 'shitangDaily.pantry.v2',
+    legacyPlans: 'shitangDaily.plans.v2',
+    legacyChecks: 'shitangDaily.ingredientChecks.v2'
   };
 
   const FALLBACK_IMAGE = `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
@@ -655,7 +851,9 @@
     pendingImageData: '',
     pendingMealSelection: null,
     detailRecipeId: null,
-    detailServingValue: 2
+    detailServingValue: 1,
+    mealShares: {},
+    nutritionView: 'day'
   };
 
   const mealTypes = [
@@ -795,7 +993,7 @@
 
   function normalizeRecipe(recipe) {
     const base = recipe && typeof recipe === 'object' ? recipe : {};
-    const servings = Math.max(1, parseInt(base.servings, 10) || 2);
+    const servings = Math.max(1, parseInt(base.servings, 10) || 1);
     return {
       id: base.id || crypto.randomUUID(),
       name: String(base.name || '').trim(),
@@ -858,7 +1056,9 @@
       recipes: migrateRecipes(source.recipes || []),
       pantry: Array.isArray(source.pantry) ? source.pantry : [],
       plans: migratePlans(source.plans || {}),
-      ingredientChecks: source.ingredientChecks && typeof source.ingredientChecks === 'object' ? source.ingredientChecks : {}
+      ingredientChecks: source.ingredientChecks && typeof source.ingredientChecks === 'object' ? source.ingredientChecks : {},
+      mealShares: source.mealShares && typeof source.mealShares === 'object' ? source.mealShares : {},
+      nutritionView: source.nutritionView === 'meal' ? 'meal' : 'day'
     };
   }
 
@@ -877,18 +1077,22 @@
       recipes: loadJson(STORAGE_KEYS.recipes, loadJson(STORAGE_KEYS.legacyRecipes, DEFAULT_RECIPES)),
       pantry: loadJson(STORAGE_KEYS.pantry, loadJson(STORAGE_KEYS.legacyPantry, [])),
       plans: loadJson(STORAGE_KEYS.plans, loadJson(STORAGE_KEYS.legacyPlans, {})),
-      ingredientChecks: loadJson(STORAGE_KEYS.checks, loadJson(STORAGE_KEYS.legacyChecks, {}))
+      ingredientChecks: loadJson(STORAGE_KEYS.checks, loadJson(STORAGE_KEYS.legacyChecks, {})),
+      mealShares: {},
+      nutritionView: 'day'
     });
   }
 
   function saveAll() {
     const snapshot = {
-      version: 2,
+      version: 3,
       savedAt: new Date().toISOString(),
       recipes: state.recipes,
       pantry: state.pantry,
       plans: state.plans,
-      ingredientChecks: state.ingredientChecks
+      ingredientChecks: state.ingredientChecks,
+      mealShares: state.mealShares,
+      nutritionView: state.nutritionView
     };
 
     saveJson(STORAGE_KEYS.appState, snapshot);
@@ -902,6 +1106,19 @@
     saveJson(STORAGE_KEYS.legacyPantry, state.pantry);
     saveJson(STORAGE_KEYS.legacyPlans, state.plans);
     saveJson(STORAGE_KEYS.legacyChecks, state.ingredientChecks);
+  }
+
+  function getMealShare(date, mealKey) {
+    state.mealShares[date] ||= {};
+    const value = Number(state.mealShares[date][mealKey]);
+    return Number.isFinite(value) && value > 0 ? value : 2;
+  }
+
+  function setMealShare(date, mealKey, value) {
+    state.mealShares[date] ||= {};
+    const numeric = Number(value);
+    state.mealShares[date][mealKey] = Number.isFinite(numeric) && numeric > 0 ? numeric : 2;
+    saveAll();
   }
 
   function getRecipeTags(recipe) {
@@ -1161,68 +1378,235 @@
     return sections;
   }
 
-  function calcDailyNutrition(date) {
+  function calcMealNutrition(date, mealKey) {
     const totals = { calories: 0, carbs: 0, protein: 0, fat: 0 };
-    let people = 0;
+    let plannedPeople = 0;
+    const sharePeople = getMealShare(date, mealKey);
 
-    mealTypes.forEach(meal => {
-      getPlanItemsForDay(date, meal.key).forEach(planItem => {
-        const recipe = state.recipes.find(r => r.id === planItem.recipeId);
-        if (!recipe) return;
-        const baseServings = Math.max(1, parseInt(recipe.servings, 10) || 2);
-        const scale = planItem.servings / baseServings;
-        const nutrition = scaleNutrition(recipe.nutrition || {}, scale);
-        ['calories', 'carbs', 'protein', 'fat'].forEach(field => {
-          if (Number.isFinite(nutrition[field])) {
-            totals[field] += nutrition[field];
-          }
-        });
-        people += planItem.servings;
+    getPlanItemsForDay(date, mealKey).forEach(planItem => {
+      const recipe = state.recipes.find(r => r.id === planItem.recipeId);
+      if (!recipe) return;
+      const baseServings = Math.max(1, parseInt(recipe.servings, 10) || 1);
+      const scale = planItem.servings / baseServings;
+      const nutrition = scaleNutrition(recipe.nutrition || {}, scale);
+      ['calories', 'carbs', 'protein', 'fat'].forEach(field => {
+        if (Number.isFinite(nutrition[field])) {
+          totals[field] += nutrition[field];
+        }
       });
+      plannedPeople += planItem.servings;
     });
 
-    const perPerson = people > 0 ? {
-      calories: totals.calories / people,
-      carbs: totals.carbs / people,
-      protein: totals.protein / people,
-      fat: totals.fat / people
+    const perPerson = sharePeople > 0 ? {
+      calories: totals.calories / sharePeople,
+      carbs: totals.carbs / sharePeople,
+      protein: totals.protein / sharePeople,
+      fat: totals.fat / sharePeople
     } : { calories: 0, carbs: 0, protein: 0, fat: 0 };
 
-    return { totals, perPerson, people };
+    return { totals, perPerson, sharePeople, plannedPeople };
+  }
+
+
+  function calcDailyNutrition(date) {
+    const totals = { calories: 0, carbs: 0, protein: 0, fat: 0 };
+    let totalSharePeople = 0;
+
+    mealTypes.forEach(meal => {
+      const mealSummary = calcMealNutrition(date, meal.key);
+      ['calories', 'carbs', 'protein', 'fat'].forEach(field => {
+        totals[field] += mealSummary.totals[field];
+      });
+      totalSharePeople += mealSummary.sharePeople;
+    });
+
+    const perPerson = totalSharePeople > 0 ? {
+      calories: totals.calories / totalSharePeople,
+      carbs: totals.carbs / totalSharePeople,
+      protein: totals.protein / totalSharePeople,
+      fat: totals.fat / totalSharePeople
+    } : { calories: 0, carbs: 0, protein: 0, fat: 0 };
+
+    const macroCalories = {
+      carbs: totals.carbs * 4,
+      protein: totals.protein * 4,
+      fat: totals.fat * 9
+    };
+
+    const macroTotalCalories = macroCalories.carbs + macroCalories.protein + macroCalories.fat;
+    const macroRatios = macroTotalCalories > 0 ? {
+      carbs: macroCalories.carbs / macroTotalCalories * 100,
+      protein: macroCalories.protein / macroTotalCalories * 100,
+      fat: macroCalories.fat / macroTotalCalories * 100
+    } : { carbs: 0, protein: 0, fat: 0 };
+
+    return { totals, perPerson, totalSharePeople, macroCalories, macroRatios, macroTotalCalories };
+  }
+
+  function buildNutritionAdvice(ratios) {
+    const ranges = {
+      carbs: [45, 65],
+      protein: [10, 35],
+      fat: [25, 35]
+    };
+
+    const parts = [
+      ['碳水', ratios.carbs, ranges.carbs],
+      ['蛋白质', ratios.protein, ranges.protein],
+      ['脂肪', ratios.fat, ranges.fat]
+    ].map(([label, value, [min, max]]) => {
+      if (!Number.isFinite(value) || value === 0) {
+        return { label, text: '暂无数据' };
+      }
+      if (value < min) {
+        return { label, text: `${label}不足` };
+      }
+      if (value > max) {
+        return { label, text: `${label}过多` };
+      }
+      return { label, text: `${label}适中` };
+    });
+
+    return parts;
+  }
+
+  function renderMacroChart(macroCalories, macroRatios) {
+    const segments = [
+      { key: 'carbs', label: '碳水', color: '#d66b3d', value: macroCalories.carbs, percent: macroRatios.carbs },
+      { key: 'protein', label: '蛋白质', color: '#748b59', value: macroCalories.protein, percent: macroRatios.protein },
+      { key: 'fat', label: '脂肪', color: '#6b79b6', value: macroCalories.fat, percent: macroRatios.fat }
+    ].filter(item => item.value > 0);
+
+    if (!segments.length) {
+      return '<div class="empty">暂时没有可视化数据。</div>';
+    }
+
+    let current = 0;
+    const gradient = segments.map(item => {
+      const next = current + (item.value / segments.reduce((sum, seg) => sum + seg.value, 0)) * 100;
+      const chunk = `${item.color} ${current.toFixed(4)}% ${next.toFixed(4)}%`;
+      current = next;
+      return chunk;
+    }).join(', ');
+
+    const center = `
+      <div class="nutrition-pie-center">
+        ${formatNumber(macroCalories.carbs + macroCalories.protein + macroCalories.fat)} kcal
+        <span>来自碳水 / 蛋白质 / 脂肪</span>
+      </div>`;
+
+    const legend = segments.map(item => `
+      <div class="nutrition-legend-item">
+        <div class="nutrition-legend-label">
+          <span class="nutrition-legend-swatch" style="background:${item.color};"></span>
+          <span>${escapeHtml(item.label)}</span>
+        </div>
+        <span>${formatNumber(item.percent)}% · ${formatNumber(item.value)} kcal</span>
+      </div>
+    `).join('');
+
+    const advice = buildNutritionAdvice(macroRatios).map(item => `
+      <div class="nutrition-advice-item"><strong>${escapeHtml(item.label)}</strong>${escapeHtml(item.text)}</div>
+    `).join('');
+
+    return `
+      <div class="nutrition-chart-card">
+        <div class="nutrition-chart">
+          <div class="nutrition-pie" style="background: conic-gradient(${gradient});">
+            ${center}
+          </div>
+          <div class="nutrition-legend">${legend}</div>
+          <div class="nutrition-advice">${advice}</div>
+        </div>
+      </div>`;
   }
 
   function renderNutritionSummary(date) {
     const container = $('#dailyNutritionSummary');
+    const toggleBtn = $('#nutritionModeBtn');
     if (!container) return;
-    const summary = calcDailyNutrition(date);
-    const hasData = ['calories', 'carbs', 'protein', 'fat'].some(field => summary.totals[field] > 0);
 
-    if (!hasData) {
-      container.innerHTML = '<div class="empty">先填写菜谱营养信息后，这里会显示当天总计和人均。</div>';
+    if (toggleBtn) {
+      toggleBtn.textContent = state.nutritionView === 'day' ? '每餐' : '全天';
+    }
+
+    if (state.nutritionView === 'meal') {
+      const cards = mealTypes.map(meal => {
+        const summary = calcMealNutrition(date, meal.key);
+        const hasPlan = summary.plannedPeople > 0;
+        const hasNutrition = ['calories', 'carbs', 'protein', 'fat'].some(field => summary.totals[field] > 0);
+
+        if (!hasPlan) {
+          return `
+            <div class="nutrition-card">
+              <div class="nutrition-card-header">
+                <div>
+                  <div class="label">${escapeHtml(meal.label)}</div>
+                  <div class="value" style="font-size:14px;font-weight:700;">尚未安排</div>
+                </div>
+              </div>
+            </div>`;
+        }
+
+        const perPersonLines = hasNutrition
+          ? `
+            <div class="detail-summary-item"><strong>热量</strong>：${formatNumber(summary.perPerson.calories)} kcal</div>
+            <div class="detail-summary-item"><strong>碳水</strong>：${formatNumber(summary.perPerson.carbs)} g</div>
+            <div class="detail-summary-item"><strong>蛋白质</strong>：${formatNumber(summary.perPerson.protein)} g</div>
+            <div class="detail-summary-item"><strong>脂肪</strong>：${formatNumber(summary.perPerson.fat)} g</div>`
+          : `<div class="detail-summary-item">这餐还没有填写营养信息。</div>`;
+
+        return `
+          <div class="nutrition-card">
+            <div class="nutrition-card-header">
+              <div>
+                <div class="label">${escapeHtml(meal.label)}</div>
+                <div class="value" style="font-size:14px;font-weight:700;">共享 ${formatNumber(summary.sharePeople)} 人</div>
+              </div>
+            </div>
+            <div class="detail-summary-grid" style="margin-top:10px;">
+              ${perPersonLines}
+            </div>
+          </div>`;
+      }).join('');
+
+      container.innerHTML = `<div class="nutrition-summary-grid">${cards}</div>`;
       return;
     }
 
-    container.innerHTML = `
-      <div class="nutrition-summary-grid">
-        <div class="nutrition-card">
-          <div class="label">当天总热量</div>
-          <div class="value">${formatNumber(summary.totals.calories)} kcal</div>
-        </div>
-        <div class="nutrition-card">
-          <div class="label">当天总碳水</div>
-          <div class="value">${formatNumber(summary.totals.carbs)} g</div>
-        </div>
-        <div class="nutrition-card">
-          <div class="label">当天总蛋白质</div>
-          <div class="value">${formatNumber(summary.totals.protein)} g</div>
-        </div>
-        <div class="nutrition-card">
-          <div class="label">当天总脂肪</div>
-          <div class="value">${formatNumber(summary.totals.fat)} g</div>
-        </div>
+    const summary = calcDailyNutrition(date);
+    const hasNutrition = summary.macroTotalCalories > 0 || ['calories', 'carbs', 'protein', 'fat'].some(field => summary.totals[field] > 0);
+
+    if (!hasNutrition) {
+      container.innerHTML = '<div class="empty">先安排菜谱并填写营养信息后，这里会显示全天人均营养、扇形图和建议。</div>';
+      return;
+    }
+
+    const dayCards = `
+      <div class="nutrition-day-card">
+        <div class="label">全天人均热量</div>
+        <div class="value">${formatNumber(summary.perPerson.calories)} kcal</div>
       </div>
-      <div class="nutrition-note">按规划的总份数平均后：每人约 ${formatNumber(summary.perPerson.calories)} kcal、${formatNumber(summary.perPerson.carbs)} g 碳水、${formatNumber(summary.perPerson.protein)} g 蛋白质、${formatNumber(summary.perPerson.fat)} g 脂肪。</div>
-    `;
+      <div class="nutrition-day-card">
+        <div class="label">全天人均碳水</div>
+        <div class="value">${formatNumber(summary.perPerson.carbs)} g</div>
+      </div>
+      <div class="nutrition-day-card">
+        <div class="label">全天人均蛋白质</div>
+        <div class="value">${formatNumber(summary.perPerson.protein)} g</div>
+      </div>
+      <div class="nutrition-day-card">
+        <div class="label">全天人均脂肪</div>
+        <div class="value">${formatNumber(summary.perPerson.fat)} g</div>
+      </div>`;
+
+    container.innerHTML = `
+      <div class="nutrition-day-grid">
+        <div>
+          <div class="nutrition-summary-grid" style="margin-top:0;">${dayCards}</div>
+        </div>
+        ${renderMacroChart(summary.macroCalories, summary.macroRatios)}
+      </div>`;
   }
 
   function renderDailyIngredients(date) {
@@ -1276,6 +1660,7 @@
     if (!wrapper) return;
 
     wrapper.innerHTML = mealTypes.map(meal => {
+      const sharePeople = getMealShare(date, meal.key);
       const items = getPlanItemsForDay(date, meal.key);
       const renderedItems = items.map(item => {
         const recipe = state.recipes.find(r => r.id === item.recipeId);
@@ -1284,18 +1669,31 @@
           <div class="planner-item">
             <div>
               <div class="planner-item-name" data-id="${recipe.id}">${escapeHtml(recipe.name)}</div>
-              <div class="planner-item-meta">${escapeHtml(meal.label)} · 份数可修改</div>
             </div>
-            <input type="number" min="1" step="1" value="${item.servings}" data-meal="${meal.key}" data-id="${recipe.id}" class="input planner-servings" />
-            <button class="danger-btn remove-meal-btn" data-meal="${meal.key}" data-id="${recipe.id}">移除</button>
+            <div class="planner-serving-wrap">
+              <input type="number" min="1" step="1" value="${item.servings}" data-meal="${meal.key}" data-id="${recipe.id}" class="input planner-servings" />
+              <span class="planner-serving-unit">份</span>
+            </div>
+            <button class="danger-btn remove-meal-btn" data-meal="${meal.key}" data-id="${recipe.id}">-</button>
           </div>`;
       }).join('');
 
       return `
         <div class="panel meal-section">
           <div class="meal-header">
-            <h3>${meal.label}</h3>
-            <button class="secondary-btn add-meal-btn" data-meal="${meal.key}">＋ 添加</button>
+            <div class="meal-header-left">
+              <h3>${meal.label}</h3>
+              <div class="meal-share-control">
+                <span class="meta">共享人数：</span>
+                <div class="stepper">
+                  <button type="button" class="ghost-btn meal-share-minus" data-meal="${meal.key}">－</button>
+                  <input type="number" min="1" step="1" value="${sharePeople}" data-meal="${meal.key}" class="input meal-share-input" />
+                  <button type="button" class="ghost-btn meal-share-plus" data-meal="${meal.key}">＋</button>
+                </div>
+                <span class="meta">人</span>
+              </div>
+            </div>
+            <button class="secondary-btn add-meal-btn" data-meal="${meal.key}">+</button>
           </div>
           <div class="meal-list">
             ${renderedItems || '<div class="meta">尚未安排。</div>'}
@@ -1307,6 +1705,21 @@
     $$('.remove-meal-btn').forEach(btn => btn.addEventListener('click', () => removeRecipeFromMeal(btn.dataset.id, btn.dataset.meal)));
     $$('.planner-servings').forEach(input => input.addEventListener('change', () => updateMealServings(input.dataset.id, input.dataset.meal, input.value)));
     $$('.planner-item-name').forEach(name => name.addEventListener('click', () => showRecipeDetail(name.dataset.id)));
+
+    $$('.meal-share-input').forEach(input => {
+      const mealKey = input.dataset.meal;
+      const minus = wrapper.querySelector(`.meal-share-minus[data-meal="${mealKey}"]`);
+      const plus = wrapper.querySelector(`.meal-share-plus[data-meal="${mealKey}"]`);
+      bindStepper(input, minus, plus, {
+        step: 1,
+        min: 1,
+        precision: 0,
+        onChange: value => {
+          setMealShare(date, mealKey, value);
+          renderNutritionSummary(date);
+        }
+      });
+    });
 
     renderDailyIngredients(date);
   }
@@ -1388,7 +1801,6 @@
     addIngredientRow('ingredientRows');
     addIngredientRow('seasoningRows');
     addStepRow('stepRows', '');
-    $('#recipeServings').value = '2';
     $('#recipeCalories').value = '';
     $('#recipeCarbs').value = '';
     $('#recipeProtein').value = '';
@@ -1407,7 +1819,6 @@
       $('#recipeName').value = recipe.name;
       $('#recipeCategory').value = recipe.category || '';
       $('#recipeTags').value = getRecipeTags(recipe).join(', ');
-      $('#recipeServings').value = String(recipe.servings || 2);
       $('#recipeCalories').value = recipe.nutrition?.calories ?? '';
       $('#recipeCarbs').value = recipe.nutrition?.carbs ?? '';
       $('#recipeProtein').value = recipe.nutrition?.protein ?? '';
@@ -1509,7 +1920,7 @@
       name: $('#recipeName').value.trim(),
       category: $('#recipeCategory').value.trim(),
       tags: $('#recipeTags').value.split(/[,，]/).map(tag => tag.trim()).filter(Boolean),
-      servings: Math.max(1, parseInt($('#recipeServings').value, 10) || 2),
+      servings: 1,
       nutrition: {
         calories: $('#recipeCalories').value,
         carbs: $('#recipeCarbs').value,
@@ -1565,28 +1976,55 @@
     `).join('');
   }
 
-  function bindStepper(inputEl, minusBtn, plusBtn, onChange) {
-    const readValue = () => Math.max(1, parseInt(inputEl.value, 10) || 1);
-    const writeValue = (value) => {
-      inputEl.value = String(Math.max(1, value));
-      if (onChange) onChange(readValue());
+  function roundToPrecision(value, precision) {
+    const factor = 10 ** precision;
+    return Math.round((Number(value) + Number.EPSILON) * factor) / factor;
+  }
+
+  function formatStepperValue(value, precision) {
+    const rounded = roundToPrecision(value, precision);
+    return precision > 0 ? String(rounded) : String(Math.round(rounded));
+  }
+
+  function bindStepper(inputEl, minusBtn, plusBtn, options = {}) {
+    const step = Number(options.step ?? 1);
+    const min = Number(options.min ?? 1);
+    const precision = Number.isInteger(options.precision)
+      ? options.precision
+      : String(step).includes('.')
+        ? String(step).split('.')[1].length
+        : 0;
+    const onChange = typeof options.onChange === 'function' ? options.onChange : null;
+
+    const readValue = () => {
+      const raw = Number(inputEl.value);
+      if (!Number.isFinite(raw)) return min;
+      return Math.max(min, roundToPrecision(raw, precision));
     };
 
-    minusBtn.addEventListener('click', () => writeValue(readValue() - 1));
-    plusBtn.addEventListener('click', () => writeValue(readValue() + 1));
+    const writeValue = (value) => {
+      const clamped = Math.max(min, roundToPrecision(value, precision));
+      inputEl.value = formatStepperValue(clamped, precision);
+      if (onChange) onChange(clamped);
+    };
+
+    minusBtn.addEventListener('click', () => writeValue(readValue() - step));
+    plusBtn.addEventListener('click', () => writeValue(readValue() + step));
     inputEl.addEventListener('change', () => writeValue(readValue()));
+    inputEl.addEventListener('blur', () => writeValue(readValue()));
   }
 
   function showRecipeDetail(recipeId) {
     const recipe = state.recipes.find(item => item.id === recipeId);
     if (!recipe) return;
     state.detailRecipeId = recipe.id;
-    state.detailServingValue = Math.max(1, parseInt(recipe.servings, 10) || 2);
+    state.detailServingValue = 1;
 
     const renderDetailBody = () => {
       const currentRecipe = state.recipes.find(item => item.id === state.detailRecipeId);
       if (!currentRecipe) return;
-      const scale = state.detailServingValue / Math.max(1, parseInt(currentRecipe.servings, 10) || 2);
+      const baseServings = Math.max(1, parseInt(currentRecipe.servings, 10) || 1);
+      const scale = state.detailServingValue / baseServings;
       $('#detailTitle').textContent = currentRecipe.name;
       $('#recipeDetailBody').innerHTML = `
         <img class="detail-image" src="${currentRecipe.image || FALLBACK_IMAGE}" alt="${escapeHtml(currentRecipe.name)}" />
@@ -1596,14 +2034,14 @@
         </div>
 
         <div class="detail-serving-row">
-          <label>查看几人份
+          <label>查看几份的用量？
             <div class="stepper-wrap">
               <div class="stepper">
                 <button type="button" class="ghost-btn" id="detailServingMinus">－</button>
-                <input id="detailServingInput" class="input" type="number" min="1" step="1" value="${state.detailServingValue}" />
+                <input id="detailServingInput" class="input" type="number" min="0.1" step="0.1" value="${state.detailServingValue}" />
                 <button type="button" class="ghost-btn" id="detailServingPlus">＋</button>
               </div>
-              <div class="help">按当前份数比例重新计算食材、调料和营养信息。</div>
+              <div class="help">支持小数，按份数比例重新计算食材、调料和营养信息。</div>
             </div>
           </label>
         </div>
@@ -1655,7 +2093,7 @@
       });
 
       $('#detailServingInput').addEventListener('change', () => {
-        state.detailServingValue = Math.max(1, parseInt($('#detailServingInput').value, 10) || 1);
+        state.detailServingValue = Math.max(0.1, Number($('#detailServingInput').value) || 1);
         renderDetailBody();
       });
 
@@ -1663,9 +2101,14 @@
         $('#detailServingInput'),
         $('#detailServingMinus'),
         $('#detailServingPlus'),
-        (value) => {
-          state.detailServingValue = value;
-          renderDetailBody();
+        {
+          step: 0.1,
+          min: 0.1,
+          precision: 1,
+          onChange: value => {
+            state.detailServingValue = value;
+            renderDetailBody();
+          }
         }
       );
 
@@ -1697,17 +2140,17 @@
   function openMealServingModal(recipe) {
     state.pendingMealSelection = {
       recipeId: recipe.id,
-      servings: Math.max(1, parseInt(recipe.servings, 10) || 2)
+      servings: 1
     };
     $('#mealServingRecipeName').textContent = recipe.name;
-    $('#mealServingInput').value = String(state.pendingMealSelection.servings);
-    $('#mealServingHint').textContent = `默认以 ${Math.max(1, parseInt(recipe.servings, 10) || 2)} 人份为基准。`;
+    $('#mealServingInput').value = '1';
+    $('#mealServingHint').textContent = '默认 1 份，可按需要调整.';
     openModal('mealServingModal');
   }
 
   function confirmMealServing() {
     if (!state.pendingMealSelection || !state.currentMealType) return;
-    const servings = Math.max(1, parseInt($('#mealServingInput').value, 10) || 2);
+    const servings = Math.max(1, parseInt($('#mealServingInput').value, 10) || 1);
     addRecipeToMeal(state.pendingMealSelection.recipeId, state.currentMealType, servings);
     state.pendingMealSelection = null;
     closeModal('mealServingModal');
@@ -1718,9 +2161,14 @@
     const minus = $('#mealServingMinus');
     const plus = $('#mealServingPlus');
     if (!input || !minus || !plus) return;
-    bindStepper(input, minus, plus, () => {
-      state.pendingMealSelection.servings = Math.max(1, parseInt(input.value, 10) || 1);
-      $('#mealServingHint').textContent = `当前选择 ${state.pendingMealSelection.servings} 人份。`;
+    bindStepper(input, minus, plus, {
+      step: 1,
+      min: 1,
+      precision: 0,
+      onChange: value => {
+        state.pendingMealSelection.servings = value;
+        $('#mealServingHint').textContent = `当前选择 ${formatNumber(value)} 份。`;
+      }
     });
   }
 
@@ -1775,6 +2223,10 @@
   $('#deleteRecipeBtn').addEventListener('click', deleteCurrentRecipe);
   $('#mealPickerSearch').addEventListener('input', renderMealPicker);
   $('#confirmMealServingBtn').addEventListener('click', confirmMealServing);
+  $('#nutritionModeBtn').addEventListener('click', () => {
+    state.nutritionView = state.nutritionView === 'day' ? 'meal' : 'day';
+    renderNutritionSummary($('#planDate').value || getToday());
+  });
 
   $('#recipeImage').addEventListener('change', async event => {
     const file = event.target.files[0];
@@ -1809,6 +2261,8 @@
   state.pantry = loadedState.pantry;
   state.plans = loadedState.plans;
   state.ingredientChecks = loadedState.ingredientChecks;
+  state.mealShares = loadedState.mealShares || {};
+  state.nutritionView = loadedState.nutritionView === 'meal' ? 'meal' : 'day';
 
   saveAll();
   renderAll();
