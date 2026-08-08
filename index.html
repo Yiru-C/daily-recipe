@@ -1452,6 +1452,60 @@
     };
   }
 
+  function looksLikeRecipeObject(value) {
+    return !!(value && typeof value === 'object' && !Array.isArray(value) && (
+      typeof value.name === 'string' && value.name.trim() && (
+        Array.isArray(value.ingredients) || Array.isArray(value.seasonings) || Array.isArray(value.steps) || typeof value.steps === 'string' || typeof value.category === 'string'
+      )
+    ));
+  }
+
+  function collectRecipesFromAnyStoredData() {
+    const results = [];
+    const seen = new Set();
+
+    const pushRecipes = (items) => {
+      if (!Array.isArray(items)) return;
+      items.forEach(item => {
+        const normalized = normalizeRecipe(item);
+        if (!normalized.name) return;
+        const fingerprint = `${normalized.name}::${JSON.stringify(normalized.ingredients)}::${JSON.stringify(normalized.seasonings)}::${normalized.steps}`;
+        if (seen.has(fingerprint)) return;
+        seen.add(fingerprint);
+        results.push(normalized);
+      });
+    };
+
+    try {
+      for (let i = 0; i < localStorage.length; i += 1) {
+        const key = localStorage.key(i);
+        if (!key) continue;
+        let parsed;
+        try {
+          parsed = JSON.parse(localStorage.getItem(key));
+        } catch {
+          continue;
+        }
+
+        if (Array.isArray(parsed)) {
+          if (parsed.some(looksLikeRecipeObject)) {
+            pushRecipes(parsed);
+          }
+          continue;
+        }
+
+        if (parsed && typeof parsed === 'object') {
+          if (Array.isArray(parsed.recipes)) pushRecipes(parsed.recipes);
+          if (looksLikeRecipeObject(parsed)) pushRecipes([parsed]);
+        }
+      }
+    } catch {
+      return [];
+    }
+
+    return results;
+  }
+
   function loadState() {
     const snapshot = loadJson(STORAGE_KEYS.appState, null);
     const directRecipes = loadJson(STORAGE_KEYS.recipes, null);
@@ -1468,6 +1522,7 @@
     const oldChecks = loadJson(STORAGE_KEYS.oldChecks, null);
     const oldAppState = loadJson(STORAGE_KEYS.oldAppState, null);
     const legacyAppState = loadJson(STORAGE_KEYS.legacyAppState, null);
+    const salvagedRecipes = collectRecipesFromAnyStoredData();
 
     const pickArray = (...arrays) => {
       for (const arr of arrays) {
@@ -1498,6 +1553,7 @@
         oldRecipes,
         oldAppState?.recipes,
         legacyAppState?.recipes,
+        salvagedRecipes,
         DEFAULT_RECIPES
       ) || DEFAULT_RECIPES,
       pantry: pickArray(
