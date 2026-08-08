@@ -1,19 +1,30 @@
 {
   "name": "食堂日常",
   "short_name": "食堂日常",
-  "description": "菜谱记录、家中食材筛选与每日食谱规划",
+  "description": "菜谱记录、食材寻菜和每日食谱规划",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f6efe5",
-  "theme_color": "#f6efe5",
-  "lang": "zh-CN",
+  "theme_color": "#d66b3d",
   "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
     {
       "src": "icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ]
 }
