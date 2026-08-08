@@ -743,6 +743,217 @@
       }
     }
   </style>
+
+<style>
+    .sortable-row { position: relative; }
+    .sortable-row.dragging { opacity: 0.55; }
+    .sortable-row.drag-over { outline: 2px dashed rgba(214, 107, 61, 0.35); outline-offset: 2px; }
+
+    .drag-handle {
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--muted);
+      display: grid;
+      place-items: center;
+      cursor: grab;
+      user-select: none;
+      line-height: 1;
+      font-size: 16px;
+    }
+
+    .ingredient-row {
+      grid-template-columns: 28px 1.2fr 1fr auto;
+    }
+
+    .step-row {
+      grid-template-columns: 28px 38px 1fr auto;
+    }
+
+    .nutrition-legend-right {
+      display: grid;
+      justify-items: end;
+      gap: 2px;
+      text-align: right;
+    }
+
+    .nutrition-legend-range {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.25;
+    }
+
+    .nutrition-legend-item.status-low {
+      border-color: rgba(208, 122, 0, 0.28);
+    }
+
+    .nutrition-legend-item.status-ok {
+      border-color: rgba(116, 139, 89, 0.28);
+    }
+
+    .nutrition-legend-item.status-high {
+      border-color: rgba(184, 68, 68, 0.28);
+    }
+
+    .nutrition-legend-item.status-none {
+      border-color: var(--line);
+    }
+
+    .nutrition-legend-item.status-low .nutrition-status,
+    .nutrition-legend-item.status-low .nutrition-legend-value {
+      color: #d07a00;
+    }
+
+    .nutrition-legend-item.status-ok .nutrition-status,
+    .nutrition-legend-item.status-ok .nutrition-legend-value {
+      color: #3e5130;
+    }
+
+    .nutrition-legend-item.status-high .nutrition-status,
+    .nutrition-legend-item.status-high .nutrition-legend-value {
+      color: #b84444;
+    }
+
+    .nutrition-legend-item.status-none .nutrition-status,
+    .nutrition-legend-item.status-none .nutrition-legend-value {
+      color: var(--muted);
+    }
+
+    .nutrition-advice-item.status-low {
+      border-color: rgba(208, 122, 0, 0.28);
+      color: #d07a00;
+    }
+
+    .nutrition-advice-item.status-ok {
+      border-color: rgba(116, 139, 89, 0.28);
+      color: #3e5130;
+    }
+
+    .nutrition-advice-item.status-high {
+      border-color: rgba(184, 68, 68, 0.28);
+      color: #b84444;
+    }
+
+    .nutrition-advice-item.status-none {
+      color: var(--muted);
+    }
+
+    .nutrition-fiber-note {
+      margin-top: 2px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .nutrition-day-grid {
+      align-items: start;
+    }
+
+
+    .planner-serving-stepper .stepper button {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      padding: 0;
+      font-size: 12px;
+      line-height: 1;
+    }
+
+    .planner-serving-stepper .input {
+      width: 40px;
+      padding: 4px 3px;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .planner-serving-unit {
+      font-size: 12px;
+    }
+
+    @media (max-width: 640px) {
+      .nutrition-day-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .nutrition-summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .nutrition-chart-card {
+        padding: 10px;
+      }
+
+      .nutrition-pie {
+        width: 138px;
+        height: 138px;
+      }
+
+      .nutrition-pie::after {
+        inset: 20px;
+      }
+
+      .nutrition-pie-center {
+        inset: 20px;
+        padding: 8px;
+        font-size: 14px;
+      }
+
+      .nutrition-pie-center span {
+        font-size: 11px;
+      }
+
+      .meal-share-control {
+        gap: 3px;
+        font-size: 12px;
+      }
+
+      .meal-share-control .stepper button {
+        width: 24px;
+        height: 24px;
+        font-size: 12px;
+      }
+
+      .meal-share-control .input {
+        width: 44px;
+      }
+
+      .planner-serving-stepper .stepper button {
+        width: 22px;
+        height: 22px;
+        font-size: 12px;
+        border-radius: 6px;
+      }
+
+      .planner-serving-stepper .input {
+        width: 40px;
+        padding: 4px 3px;
+        font-size: 12px;
+      }
+
+      .planner-serving-unit {
+        font-size: 12px;
+      }
+
+      .add-meal-btn,
+      .remove-meal-btn {
+        padding: 4px 7px;
+        min-width: 22px;
+        font-size: 12px;
+      }
+
+      .planner-item {
+        grid-template-columns: 1fr auto auto;
+        gap: 6px;
+      }
+
+      .planner-serving-wrap {
+        gap: 3px;
+      }
+    }
+</style>
+
 </head>
 <body>
   <main class="app">
@@ -781,10 +992,10 @@
     <section class="page" id="page-pantry">
       <div class="panel">
         <h2>食材寻菜</h2>
-        <p class="meta">想用什么食材？</p>
+        <p class="meta">点选常用食材，或输入食材搜索菜谱。</p>
         <div class="search-row" style="margin-top:12px;">
-          <input id="customPantryInput" class="input" placeholder="添加一种食材，例如：番茄" />
-          <button class="secondary-btn" id="addPantryIngredientBtn">添加食材</button>
+          <input id="customPantryInput" class="input" placeholder="输入食材，例如：番茄" />
+          <button class="secondary-btn" id="addPantryIngredientBtn">搜索</button>
         </div>
         <div id="pantryChips" class="chips" style="margin-top:14px;"></div>
       </div>
@@ -858,6 +1069,9 @@
                 <label>脂肪（g）
                   <input id="recipeFat" class="input" type="number" min="0" step="0.1" placeholder="例如：14" />
                 </label>
+                <label>膳食纤维（g）
+                  <input id="recipeFiber" class="input" type="number" min="0" step="0.1" placeholder="例如：6" />
+                </label>
               </div>
               <div class="nutrition-note">如果以后接入 AI，可在这里自动补全；当前版本先支持手动录入。</div>
             </div>
@@ -890,7 +1104,6 @@
                 <button type="button" class="secondary-btn" id="addStepBtn">＋ 添加步骤</button>
               </div>
               <div id="stepRows" class="step-editor"></div>
-              <div class="nutrition-note">每次点击会自动添加下一步并编号，不需要手动输入序号。</div>
             </div>
           </div>
           <div class="modal-actions">
@@ -920,7 +1133,6 @@
       </div>
       <div class="modal-body">
         <input id="mealPickerSearch" class="input" placeholder="搜索菜名、食材、分类或标签" />
-        <div class="meal-picker-hint">点击菜谱后会在内置面板里选择这道菜要做几份的用量。</div>
         <div id="mealPickerGrid" class="recipe-grid" style="margin-top:14px;"></div>
       </div>
     </div>
@@ -1024,7 +1236,8 @@
     detailRecipeId: null,
     detailServingValue: 1,
     mealShares: {},
-    nutritionView: 'day'
+    nutritionView: 'day',
+    pantrySearch: ''
   };
 
   const mealTypes = [
@@ -1142,7 +1355,7 @@
   }
 
   function normalizeNutrition(nutrition = {}) {
-    const fields = ['calories', 'carbs', 'protein', 'fat'];
+    const fields = ['calories', 'carbs', 'protein', 'fat', 'fiber'];
     const output = {};
     fields.forEach(field => {
       const raw = nutrition[field];
@@ -1158,7 +1371,8 @@
       calories: n.calories === null ? null : n.calories * scale,
       carbs: n.carbs === null ? null : n.carbs * scale,
       protein: n.protein === null ? null : n.protein * scale,
-      fat: n.fat === null ? null : n.fat * scale
+      fat: n.fat === null ? null : n.fat * scale,
+      fiber: n.fiber === null ? null : n.fiber * scale
     };
   }
 
@@ -1292,6 +1506,47 @@
     saveAll();
   }
 
+  function getTopPantryIngredients(limit = 20) {
+    const counts = new Map();
+
+    state.recipes.forEach(recipe => {
+      const seenInRecipe = new Set();
+      (recipe.ingredients || []).forEach(item => {
+        const normalized = normalize(item.name);
+        if (!normalized || seenInRecipe.has(normalized)) return;
+        seenInRecipe.add(normalized);
+
+        const existing = counts.get(normalized) || { name: item.name, count: 0 };
+        existing.count += 1;
+        if (!existing.name) existing.name = item.name;
+        counts.set(normalized, existing);
+      });
+    });
+
+    return [...counts.values()]
+      .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, 'zh-CN'))
+      .slice(0, limit);
+  }
+
+  function getPantryVisibleSelections() {
+    const topIngredients = getTopPantryIngredients(20);
+    const topLookup = new Set(topIngredients.map(item => normalize(item.name)));
+    return state.pantry.filter(item => item.selected && topLookup.has(normalize(item.name)));
+  }
+
+  function getNutritionStatus(value, min, max) {
+    if (!Number.isFinite(value)) {
+      return { text: '暂无数据', className: 'status-none' };
+    }
+    if (value < min) {
+      return { text: '不足', className: 'status-low' };
+    }
+    if (value > max) {
+      return { text: '过多', className: 'status-high' };
+    }
+    return { text: '适中', className: 'status-ok' };
+  }
+
   function getRecipeTags(recipe) {
     return Array.isArray(recipe.tags) ? recipe.tags : [];
   }
@@ -1325,106 +1580,37 @@
       .sort((a, b) => a.localeCompare(b, 'zh-CN'));
   }
 
-  function getAllPantryNames() {
-    return [...new Set(
-      state.recipes.flatMap(recipe => [
-        ...(recipe.ingredients || []).map(item => item.name),
-        ...(recipe.seasonings || []).map(item => item.name)
-      ]).concat(state.pantry.map(item => item.name))
-    )].filter(Boolean).sort((a, b) => a.localeCompare(b, 'zh-CN'));
-  }
-
-  function recipeCard(recipe, options = {}) {
-    const previewItems = [
-      ...(recipe.ingredients || []).slice(0, 2).map(i => i.name),
-      ...(recipe.seasonings || []).slice(0, 1).map(i => i.name)
-    ].filter(Boolean).join('、');
-    return `
-      <article class="recipe-card" data-recipe-id="${recipe.id}" data-action="${options.action || 'detail'}">
-        <img src="${recipe.image || FALLBACK_IMAGE}" alt="${escapeHtml(recipe.name)}" />
-        <div class="recipe-card-body">
-          <h3>${escapeHtml(recipe.name)}</h3>
-          <div class="meta">${escapeHtml(recipe.category || '未分类')} · ${escapeHtml(previewItems || '暂无食材')}</div>
-          <div class="chips">
-            ${(getRecipeTags(recipe) || []).slice(0, 3).map(tag => `<span class="chip">${escapeHtml(tag)}</span>`).join('')}
-          </div>
-        </div>
-      </article>`;
-  }
-
-  function bindRecipeCardClicks(container) {
-    container.querySelectorAll('.recipe-card').forEach(card => {
-      card.addEventListener('click', () => {
-        const recipe = state.recipes.find(r => r.id === card.dataset.recipeId);
-        if (!recipe) return;
-
-        if (card.dataset.action === 'pick') {
-          openMealServingModal(recipe);
-          return;
-        }
-
-        showRecipeDetail(recipe.id);
-      });
-    });
-  }
-
-  function renderFilterOptions() {
-    const categorySelect = $('#categoryFilter');
-    const tagSelect = $('#tagFilter');
-    if (!categorySelect || !tagSelect) return;
-
-    const selectedCategory = categorySelect.value;
-    const selectedTag = tagSelect.value;
-
-    const categories = getAllCategories();
-    const tags = getAllTags();
-
-    categorySelect.innerHTML = `<option value="">全部分类</option>${categories.map(category => `<option value="${escapeHtml(category)}">${escapeHtml(category)}</option>`).join('')}`;
-    tagSelect.innerHTML = `<option value="">全部标签</option>${tags.map(tag => `<option value="${escapeHtml(tag)}">${escapeHtml(tag)}</option>`).join('')}`;
-
-    categorySelect.value = selectedCategory;
-    tagSelect.value = selectedTag;
-  }
-
-  function renderRecipes() {
-    renderFilterOptions();
-    const query = $('#recipeSearch').value;
-    const categoryFilter = $('#categoryFilter').value;
-    const tagFilter = $('#tagFilter').value;
-    const filtered = state.recipes.filter(recipe => recipeMatches(recipe, query, categoryFilter, tagFilter));
-    const grid = $('#recipeGrid');
-    grid.innerHTML = filtered.length
-      ? filtered.map(recipe => recipeCard(recipe)).join('')
-      : '<div class="empty" style="grid-column:1/-1;">没有找到匹配的菜谱。</div>';
-    bindRecipeCardClicks(grid);
-  }
-
   function renderPantry() {
-    const names = getAllPantryNames();
+    const topIngredients = getTopPantryIngredients(20);
+    const visibleSelections = getPantryVisibleSelections();
     const chips = $('#pantryChips');
-    chips.innerHTML = names.length ? names.map(name => {
-      const selected = state.pantry.some(item => normalize(item.name) === normalize(name) && item.selected);
-      return `<button class="chip selectable ${selected ? 'selected' : ''}" data-name="${escapeHtml(name)}">${escapeHtml(name)}</button>`;
-    }).join('') : '<div class="empty">先添加菜谱或自定义食材。</div>';
+
+    chips.innerHTML = topIngredients.length ? topIngredients.map(item => {
+      const selected = visibleSelections.some(sel => normalize(sel.name) === normalize(item.name));
+      return `<button class="chip selectable ${selected ? 'selected' : ''}" data-name="${escapeHtml(item.name)}">${escapeHtml(item.name)}</button>`;
+    }).join('') : '<div class="empty">先添加菜谱或搜索食材。</div>';
 
     chips.querySelectorAll('.chip.selectable').forEach(chip => {
       chip.addEventListener('click', () => togglePantry(chip.dataset.name));
     });
 
-    const selectedNames = state.pantry.filter(item => item.selected).map(item => normalize(item.name));
+    const query = state.pantrySearch.trim();
+    const selectedNames = visibleSelections.map(item => normalize(item.name));
     const matches = state.recipes.filter(recipe => {
-      if (!selectedNames.length) return true;
-      const available = [
-        ...(recipe.ingredients || []).map(i => normalize(i.name)),
-        ...(recipe.seasonings || []).map(i => normalize(i.name))
-      ];
-      return selectedNames.every(selected => available.some(name => name.includes(selected) || selected.includes(name)));
+      const ingredientNames = (recipe.ingredients || []).map(i => normalize(i.name));
+      const selectedMatch = !selectedNames.length || selectedNames.every(selected => ingredientNames.some(name => name.includes(selected) || selected.includes(name)));
+      const queryMatch = !query || recipeMatches(recipe, query);
+      return selectedMatch && queryMatch;
     });
 
     const matchesEl = $('#pantryMatches');
-    matchesEl.innerHTML = matches.length
-      ? matches.map(recipe => recipeCard(recipe)).join('')
-      : '<div class="empty" style="grid-column:1/-1;">目前没有同时包含所选食材的菜谱。</div>';
+    if (!topIngredients.length && !query) {
+      matchesEl.innerHTML = '<div class="empty" style="grid-column:1/-1;">先添加菜谱后，这里会出现常用食材。</div>';
+    } else {
+      matchesEl.innerHTML = matches.length
+        ? matches.map(recipe => recipeCard(recipe)).join('')
+        : '<div class="empty" style="grid-column:1/-1;">没有找到匹配的菜谱。</div>';
+    }
     bindRecipeCardClicks(matchesEl);
   }
 
@@ -1438,13 +1624,7 @@
 
   function addCustomPantryIngredient() {
     const input = $('#customPantryInput');
-    const name = input.value.trim();
-    if (!name) return;
-    const existing = state.pantry.find(item => normalize(item.name) === normalize(name));
-    if (existing) existing.selected = true;
-    else state.pantry.push({ name, selected: true });
-    input.value = '';
-    saveAll();
+    state.pantrySearch = input.value.trim();
     renderPantry();
   }
 
@@ -1550,7 +1730,7 @@
   }
 
   function calcMealNutrition(date, mealKey) {
-    const totals = { calories: 0, carbs: 0, protein: 0, fat: 0 };
+    const totals = { calories: 0, carbs: 0, protein: 0, fat: 0, fiber: 0 };
     let plannedPeople = 0;
     const sharePeople = getMealShare(date, mealKey);
 
@@ -1560,7 +1740,7 @@
       const baseServings = Math.max(1, parseInt(recipe.servings, 10) || 1);
       const scale = planItem.servings / baseServings;
       const nutrition = scaleNutrition(recipe.nutrition || {}, scale);
-      ['calories', 'carbs', 'protein', 'fat'].forEach(field => {
+      ['calories', 'carbs', 'protein', 'fat', 'fiber'].forEach(field => {
         if (Number.isFinite(nutrition[field])) {
           totals[field] += nutrition[field];
         }
@@ -1572,26 +1752,23 @@
       calories: totals.calories / sharePeople,
       carbs: totals.carbs / sharePeople,
       protein: totals.protein / sharePeople,
-      fat: totals.fat / sharePeople
-    } : { calories: 0, carbs: 0, protein: 0, fat: 0 };
+      fat: totals.fat / sharePeople,
+      fiber: totals.fiber / sharePeople
+    } : { calories: 0, carbs: 0, protein: 0, fat: 0, fiber: 0 };
 
     return { totals, perPerson, sharePeople, plannedPeople };
   }
 
-
-  
-function calcDailyNutrition(date) {
-    const totals = { calories: 0, carbs: 0, protein: 0, fat: 0 };
-    const perPerson = { calories: 0, carbs: 0, protein: 0, fat: 0 };
-    let totalSharePeople = 0;
+  function calcDailyNutrition(date) {
+    const totals = { calories: 0, carbs: 0, protein: 0, fat: 0, fiber: 0 };
+    const perPerson = { calories: 0, carbs: 0, protein: 0, fat: 0, fiber: 0 };
 
     mealTypes.forEach(meal => {
       const mealSummary = calcMealNutrition(date, meal.key);
-      ['calories', 'carbs', 'protein', 'fat'].forEach(field => {
+      ['calories', 'carbs', 'protein', 'fat', 'fiber'].forEach(field => {
         totals[field] += mealSummary.totals[field];
         perPerson[field] += mealSummary.perPerson[field];
       });
-      totalSharePeople += mealSummary.sharePeople;
     });
 
     const macroCalories = {
@@ -1607,42 +1784,31 @@ function calcDailyNutrition(date) {
       fat: macroCalories.fat / macroTotalCalories * 100
     } : { carbs: 0, protein: 0, fat: 0 };
 
-    return { totals, perPerson, totalSharePeople, macroCalories, macroRatios, macroTotalCalories };
-  }
+    const fiberTarget = Math.max(0, perPerson.calories / 1000 * 14);
 
-  function getMacroStatus(value, min, max) {
-    if (!Number.isFinite(value)) {
-      return { text: '暂无数据', className: 'status-none' };
-    }
-    if (value < min) {
-      return { text: '不足', className: 'status-low' };
-    }
-    if (value > max) {
-      return { text: '过多', className: 'status-high' };
-    }
-    return { text: '适中', className: 'status-ok' };
+    return { totals, perPerson, macroCalories, macroRatios, macroTotalCalories, fiberTarget };
   }
 
   function renderMacroChart(summary) {
     const macroDefs = [
-      { key: 'carbs', label: '碳水', color: '#d66b3d', value: summary.macroCalories.carbs, percent: summary.macroRatios.carbs, range: [45, 65] },
-      { key: 'protein', label: '蛋白质', color: '#748b59', value: summary.macroCalories.protein, percent: summary.macroRatios.protein, range: [10, 35] },
-      { key: 'fat', label: '脂肪', color: '#6b79b6', value: summary.macroCalories.fat, percent: summary.macroRatios.fat, range: [25, 35] }
+      { key: 'carbs', label: '碳水', color: '#d66b3d', value: summary.macroCalories.carbs, percent: summary.macroRatios.carbs, range: [45, 65], rangeText: '理想 45%–65%' },
+      { key: 'protein', label: '蛋白质', color: '#748b59', value: summary.macroCalories.protein, percent: summary.macroRatios.protein, range: [10, 35], rangeText: '理想 10%–35%' },
+      { key: 'fat', label: '脂肪', color: '#6b79b6', value: summary.macroCalories.fat, percent: summary.macroRatios.fat, range: [20, 35], rangeText: '理想 20%–35%' }
     ];
 
     const segments = macroDefs.filter(item => item.value > 0);
-    if (!segments.length) {
+    if (!segments.length && !(summary.perPerson.fiber > 0)) {
       return '<div class="nutrition-chart-card"><div class="empty">暂时没有可视化数据。</div></div>';
     }
 
     const total = segments.reduce((sum, item) => sum + item.value, 0);
     let current = 0;
-    const gradient = segments.map(item => {
+    const gradient = total > 0 ? segments.map(item => {
       const next = current + (item.value / total) * 100;
       const chunk = `${item.color} ${current.toFixed(4)}% ${next.toFixed(4)}%`;
       current = next;
       return chunk;
-    }).join(', ');
+    }).join(', ') : `${segments[0]?.color || '#d66b3d'} 0% 100%`;
 
     const center = `
       <div class="nutrition-pie-center">
@@ -1650,17 +1816,47 @@ function calcDailyNutrition(date) {
         <span>全天人均</span>
       </div>`;
 
-    const legend = macroDefs.map(item => {
-      const status = getMacroStatus(item.percent, item.range[0], item.range[1]);
+    const macroLegend = macroDefs.map(item => {
+      const status = getNutritionStatus(item.percent, item.range[0], item.range[1]);
       return `
         <div class="nutrition-legend-item ${status.className}">
           <div class="nutrition-legend-label">
             <span class="nutrition-legend-swatch" style="background:${item.color};"></span>
             <span>${escapeHtml(item.label)}</span>
           </div>
-          <span class="nutrition-legend-value">${formatNumber(item.percent)}% · <strong class="nutrition-status ${status.className}">${status.text}</strong></span>
+          <div class="nutrition-legend-right">
+            <span class="nutrition-legend-value">${formatNumber(item.percent)}% · <strong class="nutrition-status ${status.className}">${status.text}</strong></span>
+            <span class="nutrition-legend-range">${escapeHtml(item.rangeText)}</span>
+          </div>
         </div>`;
     }).join('');
+
+    const fiberTarget = summary.fiberTarget;
+    const fiberStatus = fiberTarget > 0
+      ? getNutritionStatus(summary.perPerson.fiber, fiberTarget * 0.9, fiberTarget * 1.1)
+      : { text: '暂无数据', className: 'status-none' };
+    const fiberLegend = `
+      <div class="nutrition-legend-item ${fiberStatus.className}">
+        <div class="nutrition-legend-label">
+          <span class="nutrition-legend-swatch" style="background:#c7a56d;"></span>
+          <span>膳食纤维</span>
+        </div>
+        <div class="nutrition-legend-right">
+          <span class="nutrition-legend-value">${formatNumber(summary.perPerson.fiber)} g · <strong class="nutrition-status ${fiberStatus.className}">${fiberStatus.text}</strong></span>
+          <span class="nutrition-legend-range">${fiberTarget > 0 ? `建议约 ${formatNumber(fiberTarget)} g` : '建议 14 g / 1000 kcal'}</span>
+        </div>
+      </div>`;
+
+    const advice = [...macroDefs.map(item => {
+      const status = getNutritionStatus(item.percent, item.range[0], item.range[1]);
+      return `
+        <div class="nutrition-advice-item ${status.className}">
+          <strong>${escapeHtml(item.label)}</strong>${escapeHtml(status.text)}，${escapeHtml(item.rangeText)}
+        </div>`;
+    }), `
+      <div class="nutrition-advice-item ${fiberStatus.className}">
+        <strong>膳食纤维</strong>${escapeHtml(fiberStatus.text)}${fiberTarget > 0 ? `，建议约 ${formatNumber(fiberTarget)} g` : ''} 
+      </div>`].join('');
 
     return `
       <div class="nutrition-chart-card">
@@ -1668,12 +1864,16 @@ function calcDailyNutrition(date) {
           <div class="nutrition-pie" style="background: conic-gradient(${gradient});">
             ${center}
           </div>
-          <div class="nutrition-legend">${legend}</div>
+          <div class="nutrition-legend">
+            ${macroLegend}
+            ${fiberLegend}
+          </div>
+          <div class="nutrition-advice">${advice}</div>
         </div>
       </div>`;
   }
 
-function renderNutritionSummary(date) {
+  function renderNutritionSummary(date) {
     const container = $('#dailyNutritionSummary');
     const toggleBtn = $('#nutritionModeBtn');
     if (!container) return;
@@ -1686,7 +1886,7 @@ function renderNutritionSummary(date) {
       const cards = mealTypes.map(meal => {
         const summary = calcMealNutrition(date, meal.key);
         const hasPlan = summary.plannedPeople > 0;
-        const hasNutrition = ['calories', 'carbs', 'protein', 'fat'].some(field => summary.totals[field] > 0);
+        const hasNutrition = ['calories', 'carbs', 'protein', 'fat', 'fiber'].some(field => summary.totals[field] > 0);
 
         if (!hasPlan) {
           return `
@@ -1705,7 +1905,8 @@ function renderNutritionSummary(date) {
             <div class="detail-summary-item"><strong>热量</strong>：${formatNumber(summary.perPerson.calories)} kcal</div>
             <div class="detail-summary-item"><strong>碳水</strong>：${formatNumber(summary.perPerson.carbs)} g</div>
             <div class="detail-summary-item"><strong>蛋白质</strong>：${formatNumber(summary.perPerson.protein)} g</div>
-            <div class="detail-summary-item"><strong>脂肪</strong>：${formatNumber(summary.perPerson.fat)} g</div>`
+            <div class="detail-summary-item"><strong>脂肪</strong>：${formatNumber(summary.perPerson.fat)} g</div>
+            <div class="detail-summary-item"><strong>膳食纤维</strong>：${formatNumber(summary.perPerson.fiber)} g</div>`
           : `<div class="detail-summary-item">这餐还没有填写营养信息。</div>`;
 
         return `
@@ -1727,7 +1928,7 @@ function renderNutritionSummary(date) {
     }
 
     const summary = calcDailyNutrition(date);
-    const hasNutrition = summary.perPerson.calories > 0 || summary.macroTotalCalories > 0 || ['calories', 'carbs', 'protein', 'fat'].some(field => summary.perPerson[field] > 0);
+    const hasNutrition = summary.perPerson.calories > 0 || summary.macroTotalCalories > 0 || ['calories', 'carbs', 'protein', 'fat', 'fiber'].some(field => summary.perPerson[field] > 0);
 
     if (!hasNutrition) {
       container.innerHTML = '<div class="empty">先安排菜谱并填写营养信息后，这里会显示全天人均营养和扇形图。</div>';
@@ -1750,6 +1951,10 @@ function renderNutritionSummary(date) {
       <div class="nutrition-day-card">
         <div class="label">全天人均脂肪</div>
         <div class="value">${formatNumber(summary.perPerson.fat)} g</div>
+      </div>
+      <div class="nutrition-day-card">
+        <div class="label">全天人均膳食纤维</div>
+        <div class="value">${formatNumber(summary.perPerson.fiber)} g</div>
       </div>`;
 
     container.innerHTML = `
@@ -1902,14 +2107,17 @@ function renderPlanner() {
 
     const rows = values.length ? values : [''];
     rows.forEach((value, index) => addStepRow(containerId, value, index + 1));
+    enableSortableList(containerId, { renumber: true });
   }
 
   function addStepRow(containerId, value = '', stepNumber = null) {
     const container = document.getElementById(containerId);
     if (!container) return;
     const row = document.createElement('div');
-    row.className = 'step-row';
+    row.className = 'step-row sortable-row';
+    row.draggable = true;
     row.innerHTML = `
+      <button type="button" class="drag-handle" title="拖动排序" aria-label="拖动排序">⋮⋮</button>
       <div class="step-index">${stepNumber || (container.children.length + 1)}</div>
       <textarea class="input step-text" placeholder="填写第${stepNumber || (container.children.length + 1)}步">${escapeHtml(value)}</textarea>
       <button type="button" class="danger-btn remove-step-btn">×</button>
@@ -1921,6 +2129,7 @@ function renderPlanner() {
     });
     container.appendChild(row);
     renumberStepRows(containerId);
+    enableSortableList(containerId, { renumber: true });
   }
 
   function renumberStepRows(containerId) {
@@ -1940,15 +2149,19 @@ function renderPlanner() {
     container.innerHTML = '';
     if (!items.length) {
       addIngredientRow(containerId);
+      enableSortableList(containerId);
       return;
     }
     items.forEach(item => addIngredientRow(containerId, item.name, item.amount ? formatAmount(item.amount, 1) : ''));
+    enableSortableList(containerId);
   }
 
   function addIngredientRow(containerId, name = '', amount = '') {
     const row = document.createElement('div');
-    row.className = 'ingredient-row';
+    row.className = 'ingredient-row sortable-row';
+    row.draggable = true;
     row.innerHTML = `
+      <button type="button" class="drag-handle" title="拖动排序" aria-label="拖动排序">⋮⋮</button>
       <input class="input ingredient-name" placeholder="名称" value="${escapeHtml(name)}" />
       <input class="input ingredient-amount" placeholder="例如：2个、300克、适量" value="${escapeHtml(amount)}" />
       <button type="button" class="danger-btn remove-ingredient-btn">×</button>`;
@@ -1958,6 +2171,7 @@ function renderPlanner() {
       if (!container.children.length) addIngredientRow(containerId);
     });
     document.getElementById(containerId).appendChild(row);
+    enableSortableList(containerId);
   }
 
   function resetRecipeForm() {
@@ -1975,6 +2189,7 @@ function renderPlanner() {
     $('#recipeCarbs').value = '';
     $('#recipeProtein').value = '';
     $('#recipeFat').value = '';
+    $('#recipeFiber').value = '';
     state.pendingImageData = '';
     $('#imagePreview').style.display = 'none';
     $('#imagePreview').src = '';
@@ -1993,6 +2208,7 @@ function renderPlanner() {
       $('#recipeCarbs').value = recipe.nutrition?.carbs ?? '';
       $('#recipeProtein').value = recipe.nutrition?.protein ?? '';
       $('#recipeFat').value = recipe.nutrition?.fat ?? '';
+      $('#recipeFiber').value = recipe.nutrition?.fiber ?? '';
       $('#ingredientRows').innerHTML = '';
       $('#seasoningRows').innerHTML = '';
       renderIngredientRows('ingredientRows', recipe.ingredients || []);
@@ -2095,7 +2311,8 @@ function renderPlanner() {
         calories: $('#recipeCalories').value,
         carbs: $('#recipeCarbs').value,
         protein: $('#recipeProtein').value,
-        fat: $('#recipeFat').value
+        fat: $('#recipeFat').value,
+        fiber: $('#recipeFiber').value
       },
       image: state.pendingImageData,
       ingredients,
@@ -2132,7 +2349,8 @@ function renderPlanner() {
       ['热量', nutrition.calories, 'kcal'],
       ['碳水', nutrition.carbs, 'g'],
       ['蛋白质', nutrition.protein, 'g'],
-      ['脂肪', nutrition.fat, 'g']
+      ['脂肪', nutrition.fat, 'g'],
+      ['膳食纤维', nutrition.fiber, 'g']
     ].filter(([, value]) => Number.isFinite(value));
 
     if (!lines.length) {
@@ -2182,6 +2400,56 @@ function renderPlanner() {
     plusBtn.addEventListener('click', () => writeValue(readValue() + step));
     inputEl.addEventListener('change', () => writeValue(readValue()));
     inputEl.addEventListener('blur', () => writeValue(readValue()));
+  }
+
+  function getDragAfterElement(container, y) {
+    const draggableElements = [...container.querySelectorAll('.sortable-row:not(.dragging)')];
+    return draggableElements.reduce((closest, child) => {
+      const box = child.getBoundingClientRect();
+      const offset = y - box.top - box.height / 2;
+      if (offset < 0 && offset > closest.offset) {
+        return { offset, element: child };
+      }
+      return closest;
+    }, { offset: Number.NEGATIVE_INFINITY, element: null }).element;
+  }
+
+  function enableSortableList(containerId, options = {}) {
+    const container = document.getElementById(containerId);
+    if (!container || container.dataset.sortableBound === '1') return;
+
+    container.dataset.sortableBound = '1';
+    const renumber = !!options.renumber;
+
+    container.addEventListener('dragstart', event => {
+      const row = event.target.closest('.sortable-row');
+      const handle = event.target.closest('.drag-handle');
+      if (!row || !handle || !container.contains(row)) return;
+      event.dataTransfer.effectAllowed = 'move';
+      event.dataTransfer.setData('text/plain', '');
+      row.classList.add('dragging');
+      container.dataset.draggingRowId = String([...container.children].indexOf(row));
+    });
+
+    container.addEventListener('dragover', event => {
+      const dragging = container.querySelector('.sortable-row.dragging');
+      if (!dragging) return;
+      event.preventDefault();
+      const afterElement = getDragAfterElement(container, event.clientY);
+      if (!afterElement) container.appendChild(dragging);
+      else container.insertBefore(dragging, afterElement);
+    });
+
+    container.addEventListener('dragend', () => {
+      container.querySelectorAll('.sortable-row').forEach(row => row.classList.remove('dragging', 'drag-over'));
+      if (renumber) {
+        if (containerId === 'stepRows') renumberStepRows(containerId);
+      }
+    });
+
+    container.addEventListener('drop', event => {
+      event.preventDefault();
+    });
   }
 
   function showRecipeDetail(recipeId) {
