@@ -1,4 +1,4 @@
-const CACHE_NAME = 'shitang-daily-v3';
+const CACHE_NAME = 'shitang-daily-v4';
 
 const APP_SHELL = [
   './',
@@ -9,7 +9,9 @@ const APP_SHELL = [
   './icon-512.png'
 ];
 
-// 安装：缓存 App 的基础文件
+// ==============================
+// 安装 Service Worker
+// ==============================
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
@@ -17,11 +19,15 @@ self.addEventListener('install', event => {
     })
   );
 
-  // 不等待旧 Service Worker 失效
+  // 新版本安装完成后，不等待旧 SW 退出
   self.skipWaiting();
 });
 
-// 激活：删除旧版本缓存
+
+// ==============================
+// 激活 Service Worker
+// 删除旧版本缓存
+// ==============================
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(cacheNames => {
@@ -37,7 +43,10 @@ self.addEventListener('activate', event => {
   self.clients.claim();
 });
 
-// 请求策略
+
+// ==============================
+// 网络请求处理
+// ==============================
 self.addEventListener('fetch', event => {
   const request = event.request;
 
@@ -48,13 +57,22 @@ self.addEventListener('fetch', event => {
 
   const url = new URL(request.url);
 
-  // 不处理其他域名的请求
+  // 不处理第三方域名
   if (url.origin !== self.location.origin) {
     return;
   }
 
-  // HTML / 页面导航：
-  // 优先访问网络，确保部署新版本后可以立即获取新版 index.html
+
+  // ==============================
+  // HTML 页面
+  // Network First
+  //
+  // 有网络：
+  // 优先获取 GitHub Pages 最新版本
+  //
+  // 没网络：
+  // 使用本地缓存
+  // ==============================
   if (
     request.mode === 'navigate' ||
     url.pathname.endsWith('/') ||
@@ -64,21 +82,20 @@ self.addEventListener('fetch', event => {
       fetch(request)
         .then(response => {
           if (response && response.ok) {
-            const copy = response.clone();
+            const responseClone = response.clone();
 
             caches.open(CACHE_NAME).then(cache => {
-              cache.put(request, copy);
+              cache.put(request, responseClone);
             });
           }
 
           return response;
         })
         .catch(async () => {
-          // 没网时再使用缓存
-          const cached = await caches.match(request);
+          const cachedResponse = await caches.match(request);
 
-          if (cached) {
-            return cached;
+          if (cachedResponse) {
+            return cachedResponse;
           }
 
           return caches.match('./index.html');
@@ -88,17 +105,20 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // manifest、图片等静态文件：
-  // 优先使用缓存，同时后台检查更新
+
+  // ==============================
+  // 静态资源
+  // Cache First + 后台更新
+  // ==============================
   event.respondWith(
     caches.match(request).then(cachedResponse => {
-      const networkFetch = fetch(request)
+      const networkRequest = fetch(request)
         .then(response => {
           if (response && response.ok) {
-            const copy = response.clone();
+            const responseClone = response.clone();
 
             caches.open(CACHE_NAME).then(cache => {
-              cache.put(request, copy);
+              cache.put(request, responseClone);
             });
           }
 
@@ -106,20 +126,28 @@ self.addEventListener('fetch', event => {
         })
         .catch(() => null);
 
+      // 如果已经有缓存
+      // 立即返回缓存，同时后台更新
       if (cachedResponse) {
-        // 后台更新缓存
-        event.waitUntil(networkFetch);
+        event.waitUntil(networkRequest);
         return cachedResponse;
       }
 
-      return networkFetch;
+      // 没有缓存则使用网络
+      return networkRequest;
     })
   );
 });
 
-// 收到页面发来的更新命令时立即启用新版
+
+// ==============================
+// 页面主动要求启用新版 SW
+// ==============================
 self.addEventListener('message', event => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
+  if (
+    event.data &&
+    event.data.type === 'SKIP_WAITING'
+  ) {
     self.skipWaiting();
   }
 });
