@@ -1449,20 +1449,74 @@
 
   function loadState() {
     const snapshot = loadJson(STORAGE_KEYS.appState, null);
+    const directRecipes = loadJson(STORAGE_KEYS.recipes, null);
+    const legacyRecipes = loadJson(STORAGE_KEYS.legacyRecipes, null);
+    const directPantry = loadJson(STORAGE_KEYS.pantry, null);
+    const legacyPantry = loadJson(STORAGE_KEYS.legacyPantry, null);
+    const directPlans = loadJson(STORAGE_KEYS.plans, null);
+    const legacyPlans = loadJson(STORAGE_KEYS.legacyPlans, null);
+    const directChecks = loadJson(STORAGE_KEYS.checks, null);
+    const legacyChecks = loadJson(STORAGE_KEYS.legacyChecks, null);
+
+    const snapshotHasRecipes = snapshot && Array.isArray(snapshot.recipes) && snapshot.recipes.length > 0;
+    const snapshotHasPantry = snapshot && Array.isArray(snapshot.pantry) && snapshot.pantry.length > 0;
+    const snapshotHasPlans = snapshot && snapshot.plans && Object.keys(snapshot.plans).length > 0;
+    const snapshotHasChecks = snapshot && snapshot.ingredientChecks && Object.keys(snapshot.ingredientChecks).length > 0;
+
+    const source = {
+      ...(snapshot && typeof snapshot === 'object' ? snapshot : {}),
+      recipes: snapshotHasRecipes
+        ? snapshot.recipes
+        : (Array.isArray(directRecipes) && directRecipes.length
+          ? directRecipes
+          : (Array.isArray(legacyRecipes) && legacyRecipes.length ? legacyRecipes : DEFAULT_RECIPES)),
+      pantry: snapshotHasPantry
+        ? snapshot.pantry
+        : (Array.isArray(directPantry)
+          ? directPantry
+          : (Array.isArray(legacyPantry) ? legacyPantry : [])),
+      plans: snapshotHasPlans
+        ? snapshot.plans
+        : (directPlans && typeof directPlans === 'object'
+          ? directPlans
+          : (legacyPlans && typeof legacyPlans === 'object' ? legacyPlans : {})),
+      ingredientChecks: snapshotHasChecks
+        ? snapshot.ingredientChecks
+        : (directChecks && typeof directChecks === 'object'
+          ? directChecks
+          : (legacyChecks && typeof legacyChecks === 'object' ? legacyChecks : {}))
+    };
+
     if (snapshot && typeof snapshot === 'object') {
-      return normalizeLoadedState(snapshot);
+      return normalizeLoadedState(source);
     }
 
     const legacySnapshot = loadJson(STORAGE_KEYS.legacyAppState, null);
     if (legacySnapshot && typeof legacySnapshot === 'object') {
-      return normalizeLoadedState(legacySnapshot);
+      return normalizeLoadedState({
+        ...legacySnapshot,
+        recipes: Array.isArray(legacySnapshot.recipes) && legacySnapshot.recipes.length
+          ? legacySnapshot.recipes
+          : source.recipes,
+        pantry: Array.isArray(legacySnapshot.pantry) && legacySnapshot.pantry.length
+          ? legacySnapshot.pantry
+          : source.pantry,
+        plans: legacySnapshot.plans && Object.keys(legacySnapshot.plans).length
+          ? legacySnapshot.plans
+          : source.plans,
+        ingredientChecks: legacySnapshot.ingredientChecks && Object.keys(legacySnapshot.ingredientChecks).length
+          ? legacySnapshot.ingredientChecks
+          : source.ingredientChecks,
+        mealShares: legacySnapshot.mealShares && typeof legacySnapshot.mealShares === 'object' ? legacySnapshot.mealShares : {},
+        nutritionView: legacySnapshot.nutritionView === 'meal' ? 'meal' : 'day'
+      });
     }
 
     return normalizeLoadedState({
-      recipes: loadJson(STORAGE_KEYS.recipes, loadJson(STORAGE_KEYS.legacyRecipes, DEFAULT_RECIPES)),
-      pantry: loadJson(STORAGE_KEYS.pantry, loadJson(STORAGE_KEYS.legacyPantry, [])),
-      plans: loadJson(STORAGE_KEYS.plans, loadJson(STORAGE_KEYS.legacyPlans, {})),
-      ingredientChecks: loadJson(STORAGE_KEYS.checks, loadJson(STORAGE_KEYS.legacyChecks, {})),
+      recipes: source.recipes,
+      pantry: source.pantry,
+      plans: source.plans,
+      ingredientChecks: source.ingredientChecks,
       mealShares: {},
       nutritionView: 'day'
     });
